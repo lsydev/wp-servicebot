@@ -46,13 +46,15 @@
 
             if(event === "create_subscription" && !logged_in_email){
                 console.log("Creating user", response, extras);
-                jQuery.post(ajax_url, {
+                let payload = {
                     action: "create_user", 
                     email: response.customer.email, 
                     name: username,
                     password: password
-                } , function(data) {
-                    console.log("create_subscription callback", data)
+                };
+
+                let callback = function(data) {
+                    console.log("create_subscription create_user callback", data)
 
                     if(servicebot_wp_handle_response_create_subscription){
                         servicebot_wp_handle_response_create_subscription({event, response, extras});
@@ -71,7 +73,9 @@
                     //     embedContainer.parentNode.insertBefore(message, embedContainer)
                     //     console.error("Subscription created but WP user alrady exist for", response.customer.email);
                     // }
-                });
+                };
+
+                jQuery.post(ajax_url, payload, callback);
             }
 
         }else{
