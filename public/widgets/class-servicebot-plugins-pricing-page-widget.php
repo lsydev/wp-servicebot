@@ -175,57 +175,57 @@ class Servicebot_Plugins_Pricing_Page_Widget extends WP_Widget {
         }
         
         // Display widget title if defined
-			if ( $title ) {
-				echo $before_title . $title . $after_title;
-			}
+        if ( $title ) {
+            echo $before_title . $title . $after_title;
+        }
 
-            // Display the widget
-            echo '<div class="widget-text wp_widget_plugin_box">';
-            
-            print ('<div id="servicebot-subscription-portal"></div>');
+        // Display the widget
+        $render_div = '<div class="widget-text wp_widget_plugin_box">
+                            <div id="servicebot-subscription-portal"></div>
+                       </div>';
 
-            if ( defined( 'SERVICEBOT_PLUGINS_VERSION' ) ) {
-                $js_version = SERVICEBOT_PLUGINS_VERSION;
-            } else {
-                $js_version = '1.0.0';
-            }
+        print($render_div);
 
-            wp_enqueue_script( 'servicebot_subscription_portal_widget', 
-                plugin_dir_url( __FILE__ ) . 'js/servicebot-subscription-portal-widget.js',
-                array(),
-                $js_version,
-                true
-            );
+        if ( defined( 'SERVICEBOT_PLUGINS_VERSION' ) ) {
+            $js_version = SERVICEBOT_PLUGINS_VERSION;
+        } else {
+            $js_version = '1.0.0';
+        }
 
-            wp_localize_script( 'servicebot_subscription_portal_widget', 
-                        'php_props_sp_widget', 
-                        array(
-                            'livemode'        => $this->livemode,
-                            'servicebot_id'   => $this->servicebot_id,
-                            'hash'            => isset($hash) ? $hash : '',
-                            'service'         => $service,
-                            'coupon'          => $coupon,
-                            'options'         => $encoded_options,
-                            'create_user'     => $create_user ? true : false,
-                            'is_logged_in'    => $logged_in_email ? true : false,
-                            'logged_in_email' => $logged_in_email,
-                            'login_redirect_url' => $login_url,
-                            'admin_ajax_url'  => $admin_ajax_url,
-                            'widget'          => 'servicebot-plugins-pricing-page-widget',
-                            'embed_type'      => 'pricing_page',
-                            'js_version'      => $js_version
-                        )
-                    );
+        wp_enqueue_script( 'servicebot_subscription_portal_widget', 
+            plugin_dir_url( __FILE__ ) . 'js/servicebot-subscription-portal-widget.js',
+            array(),
+            $js_version,
+            true
+        );
 
-            // Test handle response function hook
-            wp_enqueue_script( 'servicebot_handle_response_js', 
-                        plugin_dir_url( __FILE__ ) . 'js/servicebot-handle-response.js',
-                        array('servicebot_subscription_portal_widget'),
-                        null,
-                        true
-                    );
+        wp_localize_script( 'servicebot_subscription_portal_widget', 
+                    'php_props_sp_widget', 
+                    array(
+                        'livemode'        => $this->livemode,
+                        'servicebot_id'   => $this->servicebot_id,
+                        'hash'            => isset($hash) ? $hash : '',
+                        'service'         => $service,
+                        'coupon'          => $coupon,
+                        'options'         => $encoded_options,
+                        'create_user'     => $create_user ? true : false,
+                        'is_logged_in'    => $logged_in_email ? true : false,
+                        'logged_in_email' => $logged_in_email,
+                        'login_redirect_url' => $login_url,
+                        'admin_ajax_url'  => $admin_ajax_url,
+                        'widget'          => 'servicebot-plugins-pricing-page-widget',
+                        'embed_type'      => 'pricing',
+                        'js_version'      => $js_version
+                    )
+                );
 
-		echo '</div>';
+        // Test handle response function hook
+        wp_enqueue_script( 'servicebot_handle_response_js', 
+                    plugin_dir_url( __FILE__ ) . 'js/servicebot-handle-response.js',
+                    array('servicebot_subscription_portal_widget'),
+                    null,
+                    true
+                );
 
 		// WordPress core after_widget hook (always include )
 		echo $after_widget;

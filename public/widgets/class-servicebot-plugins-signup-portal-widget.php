@@ -202,9 +202,11 @@ class Servicebot_Plugins_Signup_Portal_Widget extends WP_Widget {
 
         
         // Display the widget
-        echo '<div class="widget-text wp_widget_plugin_box">';
-            
-        print ('<div id="servicebot-subscription-portal"></div>');
+        $render_div = '<div class="widget-text wp_widget_plugin_box">
+                            <div id="servicebot-subscription-portal"></div>
+                       </div>';
+
+        print($render_div);
 
         if ( defined( 'SERVICEBOT_PLUGINS_VERSION' ) ) {
             $js_version = SERVICEBOT_PLUGINS_VERSION;
@@ -235,7 +237,7 @@ class Servicebot_Plugins_Signup_Portal_Widget extends WP_Widget {
                         'login_redirect_url' => $login_url,
                         'admin_ajax_url'  => $admin_ajax_url,
                         'widget'          => 'servicebot-plugins-signup-portal-widget',
-                        'embed_type'      => 'signup_portal',
+                        'embed_type'      => 'signup',
                         'js_version'      => $js_version
                     )
                 );
@@ -248,7 +250,6 @@ class Servicebot_Plugins_Signup_Portal_Widget extends WP_Widget {
                     true
                 );
 
-    echo '</div>';
 
 		// WordPress core after_widget hook (always include )
 		echo $after_widget;
