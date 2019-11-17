@@ -1,4 +1,4 @@
-=== Stripe Billing by Servicebot ===
+=== Subscription Billing by Servicebot ===
 Contributors: servicebot
 Tags: stripe,subscriptions,payments,pricing page,subscription management
 Requires at least: 5.0
@@ -7,7 +7,7 @@ Requires PHP: PHP 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Integration Stripe Billing with your Wordpress site in minutes. Allow customers to view pricing, signup, and manage subscriptions.
+Integrate Stripe Billing with your Wordpress site in minutes. Allow customers to view pricing, signup, and manage subscriptions.
 
 == Description ==
 Launch a subscription business faster than ever with the Stripe Billing plugin by Servicebot. 
