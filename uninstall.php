@@ -22,7 +22,7 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
+ * @package    Servicebot
  */
 
 // If uninstall not called from WordPress, then exit.

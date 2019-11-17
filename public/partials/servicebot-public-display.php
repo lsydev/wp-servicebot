@@ -8,8 +8,8 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/public/partials
+ * @package    Servicebot
+ * @subpackage Servicebot/public/partials
  */
 ?>
 

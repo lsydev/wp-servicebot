@@ -6,8 +6,8 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  */
 
 /**
@@ -17,11 +17,11 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  * @author     Servicebot Inc. <lung@servicebot.io>
  */
-class Servicebot_plugins_Loader {
+class Servicebot_Loader {
 
 	/**
 	 * The array of actions registered with WordPress.

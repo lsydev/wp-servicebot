@@ -9,8 +9,8 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  */
 
 /**
@@ -23,11 +23,11 @@
  * version of the plugin.
  *
  * @since      1.0.0
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  * @author     Servicebot Inc. <lung@servicebot.io>
  */
-class Servicebot_plugins {
+class Servicebot {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -35,7 +35,7 @@ class Servicebot_plugins {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Servicebot_plugins_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      Servicebot_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -67,12 +67,12 @@ class Servicebot_plugins {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'SERVICEBOT_PLUGINS_VERSION' ) ) {
-			$this->version = SERVICEBOT_PLUGINS_VERSION;
+		if ( defined( 'SERVICEBOT_VERSION' ) ) {
+			$this->version = SERVICEBOT_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'servicebot_plugins';
+		$this->plugin_name = 'servicebot';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -86,10 +86,10 @@ class Servicebot_plugins {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Servicebot_plugins_Loader. Orchestrates the hooks of the plugin.
-	 * - Servicebot_plugins_i18n. Defines internationalization functionality.
-	 * - Servicebot_plugins_Admin. Defines all hooks for the admin area.
-	 * - Servicebot_plugins_Public. Defines all hooks for the public side of the site.
+	 * - Servicebot_Loader. Orchestrates the hooks of the plugin.
+	 * - Servicebot_i18n. Defines internationalization functionality.
+	 * - Servicebot_Admin. Defines all hooks for the admin area.
+	 * - Servicebot_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -103,46 +103,46 @@ class Servicebot_plugins {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-servicebot_plugins-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-servicebot-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-servicebot_plugins-i18n.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-servicebot-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-servicebot_plugins-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-servicebot-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-servicebot_plugins-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-servicebot-public.php';
 
 		/**
 		 * The class responsible for defining all things related to the sb subscription portal widget
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/widgets/class-servicebot-plugins-subscription-portal-widget.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/widgets/class-servicebot-subscription-portal-widget.php';
 		/**
 		 * The class responsible for defining all things related to the sb pricing page widget
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/widgets/class-servicebot-plugins-pricing-page-widget.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/widgets/class-servicebot-pricing-page-widget.php';
 		/**
 		 * The class responsible for defining all things related to the sb signup portal widget
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/widgets/class-servicebot-plugins-signup-portal-widget.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/widgets/class-servicebot-signup-portal-widget.php';
 
-		$this->loader = new Servicebot_plugins_Loader();
+		$this->loader = new Servicebot_Loader();
 
 	}
 
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
-	 * Uses the Servicebot_plugins_i18n class in order to set the domain and to register the hook
+	 * Uses the Servicebot_i18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
 	 * @since    1.0.0
@@ -150,7 +150,7 @@ class Servicebot_plugins {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Servicebot_plugins_i18n();
+		$plugin_i18n = new Servicebot_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
@@ -165,7 +165,7 @@ class Servicebot_plugins {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Servicebot_plugins_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Servicebot_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -181,7 +181,7 @@ class Servicebot_plugins {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Servicebot_plugins_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Servicebot_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -212,7 +212,7 @@ class Servicebot_plugins {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    Servicebot_plugins_Loader    Orchestrates the hooks of the plugin.
+	 * @return    Servicebot_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;

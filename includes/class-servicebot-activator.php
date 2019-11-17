@@ -6,8 +6,8 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  */
 
 /**
@@ -16,11 +16,11 @@
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @since      1.0.0
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  * @author     Servicebot Inc. <lung@servicebot.io>
  */
-class Servicebot_plugins_Activator {
+class Servicebot_Activator {
 
 	/**
 	 * Short Description. (use period)

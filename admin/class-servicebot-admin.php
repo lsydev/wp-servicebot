@@ -6,8 +6,8 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/admin
+ * @package    Servicebot
+ * @subpackage Servicebot/admin
  */
 
 /**
@@ -16,11 +16,11 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/admin
+ * @package    Servicebot
+ * @subpackage Servicebot/admin
  * @author     Servicebot Inc. <lung@servicebot.io>
  */
-class Servicebot_plugins_Admin {
+class Servicebot_Admin {
 
 	/**
 	 * The ID of this plugin.
@@ -69,18 +69,18 @@ class Servicebot_plugins_Admin {
 		// set this var to be used in the settings-display view
 		$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general';
 		if(isset($_GET['error_message'])){
-			add_action('admin_notices', array($this,'servicebotPluginsSettingsMessages'));
+			add_action('admin_notices', array($this,'servicebotSettingsMessages'));
 			do_action( 'admin_notices', $_GET['error_message'] );
 		}
 		require_once 'partials/'.$this->plugin_name.'-admin-display.php';
 	}
 
-	public function ServicebotPluginsSettingsMessages($error_message){
+	public function ServicebotSettingsMessages($error_message){
 		switch ($error_message) {
 			case '1':
 				$message = ( 'There was an error adding this setting. Please try again.  If this persists, shoot us an email.');
-				$err_code = esc_attr( 'servicebot_plugins_example_setting' );
-				$setting_field = 'servicebot_plugins_example_setting';
+				$err_code = esc_attr( 'servicebot_example_setting' );
+				$setting_field = 'servicebot_example_setting';
 				break;
 		}
 		$type = 'error';
@@ -100,21 +100,21 @@ class Servicebot_plugins_Admin {
 	   */     
 		add_settings_section(
 			// ID used to identify this section and with which to register options
-			'servicebot_plugins_general_section', 
+			'servicebot_general_section', 
 			// Title to be displayed on the administration page
 			'Servicebot Embeddables Global Settings',  
 			// Callback used to render the description of the section
-			array( $this, 'servicebot_plugins_display_general_account' ),    
+			array( $this, 'servicebot_display_general_account' ),    
 			// Page on which to add this section of options
-			'servicebot_plugins_general_settings'                   
+			'servicebot_general_settings'                   
 		);
 
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
 			'subtype'	=> 'text',
-			'id'		=> 'servicebot_plugins_servicebot_id_global_setting',
-			'name'		=> 'servicebot_plugins_servicebot_id_global_setting',
+			'id'		=> 'servicebot_servicebot_id_global_setting',
+			'name'		=> 'servicebot_servicebot_id_global_setting',
 			'required' 	=> 'true',
 			'get_options_list' => '',
 			'value_type' => 'normal',
@@ -122,17 +122,17 @@ class Servicebot_plugins_Admin {
 		);
 
 		add_settings_field(
-			'servicebot_plugins_servicebot_id_global_setting',
+			'servicebot_servicebot_id_global_setting',
 			'Test Mode Servicebot ID',
-			array( $this, 'servicebot_plugins_render_settings_field' ),
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_general_section',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_general_settings',
+			'servicebot_general_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_servicebot_id_global_setting'
+			'servicebot_general_settings',
+			'servicebot_servicebot_id_global_setting'
 		);
 
 		// LIVE MODE -- servicebot id
@@ -140,8 +140,8 @@ class Servicebot_plugins_Admin {
 		$args = array (
 			'type'		=> 'input',
 			'subtype'	=> 'text',
-			'id'		=> 'servicebot_plugins_servicebot_id_live_global_setting',
-			'name'		=> 'servicebot_plugins_servicebot_id_live_global_setting',
+			'id'		=> 'servicebot_servicebot_id_live_global_setting',
+			'name'		=> 'servicebot_servicebot_id_live_global_setting',
 			'required' 	=> 'true',
 			'get_options_list' => '',
 			'value_type' => 'normal',
@@ -149,17 +149,17 @@ class Servicebot_plugins_Admin {
 		);
 
 		add_settings_field(
-			'servicebot_plugins_servicebot_id_live_global_setting',
+			'servicebot_servicebot_id_live_global_setting',
 			'Livemode Servicebot ID',
-			array( $this, 'servicebot_plugins_render_settings_field' ),
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_general_section',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_general_settings',
+			'servicebot_general_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_servicebot_id_live_global_setting'
+			'servicebot_general_settings',
+			'servicebot_servicebot_id_live_global_setting'
 		);
 
 		// LIVE MODE -- secret key
@@ -167,8 +167,8 @@ class Servicebot_plugins_Admin {
 		$args = array (
 			'type'		=> 'input',
 			'subtype'	=> 'text',
-			'id'		=> 'servicebot_plugins_servicebot_secret_key_global_setting',
-			'name'		=> 'servicebot_plugins_servicebot_secret_key_global_setting',
+			'id'		=> 'servicebot_servicebot_secret_key_global_setting',
+			'name'		=> 'servicebot_servicebot_secret_key_global_setting',
 			'required' 	=> 'true',
 			'get_options_list' => '',
 			'value_type' => 'normal',
@@ -176,25 +176,25 @@ class Servicebot_plugins_Admin {
 		);
 
 		add_settings_field(
-			'servicebot_plugins_servicebot_secret_key_global_setting',
+			'servicebot_servicebot_secret_key_global_setting',
 			'Secret Key',
-			array( $this, 'servicebot_plugins_render_settings_field' ),
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_general_section',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_general_settings',
+			'servicebot_general_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_servicebot_secret_key_global_setting'
+			'servicebot_general_settings',
+			'servicebot_servicebot_secret_key_global_setting'
 		);
 
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
 			'subtype'	=> 'text',
-			'id'		=> 'servicebot_plugins_servicebot_service_global_setting',
-			'name'		=> 'servicebot_plugins_servicebot_service_global_setting',
+			'id'		=> 'servicebot_servicebot_service_global_setting',
+			'name'		=> 'servicebot_servicebot_service_global_setting',
 			'required' 	=> 'true',
 			'get_options_list' => '',
 			'value_type' => 'normal',
@@ -202,50 +202,50 @@ class Servicebot_plugins_Admin {
 		);
 
 		add_settings_field(
-			'servicebot_plugins_servicebot_service_global_setting',
+			'servicebot_servicebot_service_global_setting',
 			'Servicebot Service',
-			array( $this, 'servicebot_plugins_render_settings_field' ),
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_general_section',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_general_settings',
+			'servicebot_general_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_servicebot_service_global_setting'
+			'servicebot_general_settings',
+			'servicebot_servicebot_service_global_setting'
 		);
 
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
 			'subtype'	=> 'checkbox',
-			'id'		=> 'servicebot_plugins_servicebot_create_user_global_setting',
-			'name'		=> 'servicebot_plugins_servicebot_create_user_global_setting',
+			'id'		=> 'servicebot_servicebot_create_user_global_setting',
+			'name'		=> 'servicebot_servicebot_create_user_global_setting',
 			'get_options_list' => '',
 			'value_type' => 'normal',
 			'wp_data' 	=> 'option'
 		);
 
 		add_settings_field(
-			'servicebot_plugins_servicebot_create_user_global_setting',
+			'servicebot_servicebot_create_user_global_setting',
 			'Create WP user on signup?',
-			array( $this, 'servicebot_plugins_render_settings_field' ),
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_general_section',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_general_settings',
+			'servicebot_general_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_servicebot_create_user_global_setting'
+			'servicebot_general_settings',
+			'servicebot_servicebot_create_user_global_setting'
 		);
 
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
 			'subtype'	=> 'text',
-			'id'		=> 'servicebot_plugins_servicebot_login_redirect_url_global_setting',
-			'name'		=> 'servicebot_plugins_servicebot_login_redirect_url_global_setting',
+			'id'		=> 'servicebot_servicebot_login_redirect_url_global_setting',
+			'name'		=> 'servicebot_servicebot_login_redirect_url_global_setting',
 			'required' 	=> 'true',
 			'get_options_list' => '',
 			'value_type' => 'normal',
@@ -253,17 +253,17 @@ class Servicebot_plugins_Admin {
 		);
 
 		add_settings_field(
-			'servicebot_plugins_servicebot_login_redirect_url_global_setting',
+			'servicebot_servicebot_login_redirect_url_global_setting',
 			'Login redirect URL, where to take your user after they signed up and logged in.',
-			array( $this, 'servicebot_plugins_render_settings_field' ),
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_general_section',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_general_settings',
+			'servicebot_general_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_servicebot_login_redirect_url_global_setting'
+			'servicebot_general_settings',
+			'servicebot_servicebot_login_redirect_url_global_setting'
 		);
 
 
@@ -272,34 +272,34 @@ class Servicebot_plugins_Admin {
 		$args = array (
 			'type'		=> 'input',
 			'subtype'	=> 'checkbox',
-			'id'		=> 'servicebot_plugins_servicebot_live_mode_global_setting',
-			'name'		=> 'servicebot_plugins_servicebot_live_mode_global_setting',
+			'id'		=> 'servicebot_servicebot_live_mode_global_setting',
+			'name'		=> 'servicebot_servicebot_live_mode_global_setting',
 			'get_options_list' => '',
 			'value_type' => 'normal',
 			'wp_data' 	=> 'option'
 		);
 
 		add_settings_field(
-			'servicebot_plugins_servicebot_live_mode_global_setting',
+			'servicebot_servicebot_live_mode_global_setting',
 			'Live Mode',
-			array( $this, 'servicebot_plugins_render_settings_field' ),
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_general_section',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_general_settings',
+			'servicebot_general_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_plugins_general_settings',
-			'servicebot_plugins_servicebot_live_mode_global_setting'
+			'servicebot_general_settings',
+			'servicebot_servicebot_live_mode_global_setting'
 		);
 
 	}
 
-	public function servicebot_plugins_display_general_account() {
+	public function servicebot_display_general_account() {
 		echo '<p></p>';
 	} 
 
-	public function servicebot_plugins_render_settings_field($args) {
+	public function servicebot_render_settings_field($args) {
 		/* EXAMPLE INPUT
 				  'type'      => 'input',
 				  'subtype'   => '',
@@ -358,15 +358,15 @@ class Servicebot_plugins_Admin {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Servicebot_plugins_Loader as all of the hooks are defined
+		 * defined in Servicebot_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Servicebot_plugins_Loader will then create the relationship
+		 * The Servicebot_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/servicebot_plugins-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/servicebot-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -381,15 +381,15 @@ class Servicebot_plugins_Admin {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Servicebot_plugins_Loader as all of the hooks are defined
+		 * defined in Servicebot_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Servicebot_plugins_Loader will then create the relationship
+		 * The Servicebot_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/servicebot_plugins-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/servicebot-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 

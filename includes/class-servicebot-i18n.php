@@ -9,8 +9,8 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  */
 
 /**
@@ -20,11 +20,11 @@
  * so that it is ready for translation.
  *
  * @since      1.0.0
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/includes
+ * @package    Servicebot
+ * @subpackage Servicebot/includes
  * @author     Servicebot Inc. <lung@servicebot.io>
  */
-class Servicebot_plugins_i18n {
+class Servicebot_i18n {
 
 
 	/**
@@ -35,7 +35,7 @@ class Servicebot_plugins_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'servicebot_plugins',
+			'servicebot',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);

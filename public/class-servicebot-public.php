@@ -6,8 +6,8 @@
  * @link       servicebot.io
  * @since      1.0.0
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/public
+ * @package    Servicebot
+ * @subpackage Servicebot/public
  */
 
 /**
@@ -16,11 +16,11 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @package    Servicebot_plugins
- * @subpackage Servicebot_plugins/public
+ * @package    Servicebot
+ * @subpackage Servicebot/public
  * @author     Servicebot Inc. <lung@servicebot.io>
  */
-class Servicebot_plugins_Public {
+class Servicebot_Public {
 
 	/**
 	 * The ID of this plugin.
@@ -65,15 +65,15 @@ class Servicebot_plugins_Public {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Servicebot_plugins_Loader as all of the hooks are defined
+		 * defined in Servicebot_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Servicebot_plugins_Loader will then create the relationship
+		 * The Servicebot_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/servicebot_plugins-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/servicebot-public.css', array(), $this->version, 'all' );
 
 	}
 
@@ -88,15 +88,15 @@ class Servicebot_plugins_Public {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Servicebot_plugins_Loader as all of the hooks are defined
+		 * defined in Servicebot_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Servicebot_plugins_Loader will then create the relationship
+		 * The Servicebot_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/servicebot_plugins-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/servicebot-public.js', array( 'jquery' ), $this->version, false );
 
 	}
 
