@@ -103,29 +103,38 @@ class Servicebot_plugins_Public {
 }
 
 
-function ajax_create_user() {
-    
-    $email = $_POST['email'];
-    $name = $_POST['name'];
+function servicebot_ajax_create_user() {
+
+    $email = sanitize_email( $_POST['email'] );
+    $name = sanitize_user( $_POST['name'] );
     $password = $_POST['password'];
-    
+	
     $userdata = array(
       'user_login'  =>  $name,
       'user_email' => $email,
       'user_pass'   =>  $password,
       'role' => 'subscriber'
-  );
-  
-  $user_id = wp_insert_user( $userdata ) ;
-  
-  //On success
-  if ( ! is_wp_error( $user_id ) ) {
-      echo "User created : ". $user_id;
+	);
+	
+	$user_id = wp_insert_user( $userdata );
+	
+	//On success
+	if ( ! is_wp_error( $user_id ) ) {
+		wp_send_json( array(    'user_id' => $user_id,
+								'email' => $email,
+								'name' => $name,
+								'password' => '*****',
+								'message' => 'User created successfully.'
+					), 200 );
+		wp_new_user_notification( $user_id, null, 'both');
+	}else{
+		wp_send_json_error( array(  'email' => $email,
+									'name' => $name,
+									'password' => '*****',
+									'error' => 'Unable to create user.',
+							), 500 );
+	}
+
   }
-    
-    wp_new_user_notification( $user_id, null, 'both');
-    return $user_id;
-    // echo whatever you need to return
-  }
-  add_action( 'wp_ajax_create_user', 'ajax_create_user' );
-  add_action( 'wp_ajax_nopriv_create_user', 'ajax_create_user' );
+  add_action( 'wp_ajax_create_user', 'servicebot_ajax_create_user' );
+  add_action( 'wp_ajax_nopriv_create_user', 'servicebot_ajax_create_user' );
