@@ -18,7 +18,7 @@
  *
  * @package    Servicebot
  * @subpackage Servicebot/public
- * @author     Servicebot Inc. <lung@servicebot.io>
+ * @author     Servicebot <team@servicebot.io>
  */
 class Servicebot_Public {
 

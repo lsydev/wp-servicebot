@@ -18,7 +18,7 @@
  * @since      1.0.0
  * @package    Servicebot
  * @subpackage Servicebot/includes
- * @author     Servicebot Inc. <lung@servicebot.io>
+ * @author     Servicebot <team@servicebot.io>
  */
 class Servicebot_Activator {
 

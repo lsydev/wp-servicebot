@@ -4,7 +4,7 @@ Plugin Name: Servicebot Subscription Portal Widget Plugin
 Plugin URI: http://www.wpexplorer.com/servicebot/
 Description: This plugin adds a servicebot subscription portal embed widget.
 Version: 1.0
-Author: Servicebot Inc.
+Author: Servicebot
 Author URI: https://servicebot.io
 License: GPL2
 */

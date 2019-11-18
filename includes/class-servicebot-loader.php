@@ -19,7 +19,7 @@
  *
  * @package    Servicebot
  * @subpackage Servicebot/includes
- * @author     Servicebot Inc. <lung@servicebot.io>
+ * @author     Servicebot <team@servicebot.io>
  */
 class Servicebot_Loader {
 
