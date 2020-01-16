@@ -83,13 +83,20 @@
         }
     }
     
+    //prepare options
+    let parsedOptions = JSON.parse(options);
+    if(parsedOptions.hideTiers && typeof parsedOptions.hideTiers == 'string')
+        parsedOptions.hideTiers = parsedOptions.hideTiers.split(',');
+    if(parsedOptions.disableTiers && typeof parsedOptions.disableTiers == 'string')
+        parsedOptions.disableTiers = parsedOptions.disableTiers.split(',');
+    
     window.servicebotSettings = {
         'servicebot_id': servicebot_id,
         'email': logged_in_email || email || '',
         'hash': hash,
         'service': service,
         'coupon': coupon,
-        'options' : JSON.parse(options),
+        'options' : parsedOptions,
         'handleResponse' : handleResponse,
         'type': embed_type,
         'metadata': {
