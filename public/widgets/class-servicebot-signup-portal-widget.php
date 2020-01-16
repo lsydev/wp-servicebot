@@ -191,7 +191,7 @@ class Servicebot_Signup_Portal_Widget extends WP_Widget {
         $decoded_options = json_decode($embed_options, true);
         if($decoded_options){
             if($decoded_options['behavior']){
-                $decoded_options['behavior']['signup'] = $default_options['behavior']['signup'];
+                $decoded_options['behavior']['signup']['promptPassword'] = $default_options['behavior']['signup']['promptPassword'];
             }else{
                 $decoded_options['behavior'] = $default_options['behavior'];
             }
