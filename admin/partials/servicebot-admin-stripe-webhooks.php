@@ -33,7 +33,7 @@
             Your WordPress Integration is running in <?php echo $live_mode ? 'live' : 'test'?> mode now.</i></p>
 			<ol>
 				<li>Click on the <i class="highlighted">Add endpoint</i> button</li>
-				<li>Paste <i class="highlighted">https://wp.servicebot.io/servicebot/v1/stripe-hooks</i> into the Endpoint URL input box</li>
+				<li>Paste <i class="highlighted"><?php echo get_site_url(); ?>/servicebot/v1/stripe-hooks</i> into the Endpoint URL input box</li>
 				<li>Select <i class="highlighted">customer.created</i> for the event to send input box.</li>
 				<li>Click <i class="highlighted">Add endpoint</i> to save</li>
 			</ol>
