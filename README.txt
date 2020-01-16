@@ -22,6 +22,7 @@ Features:
  * Customers can update their payment information
  * Customers can download Stripe invoices
  * Subscription management portal can be used with Stripe Checkout
+ * Automatically create your Stripe customers as WordPress users with Stripe Webhooks
 
 == Installation ==
 STEP-BY-STEP INSTRUCTIONS
