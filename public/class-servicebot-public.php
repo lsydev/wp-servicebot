@@ -154,8 +154,17 @@ function servicebot_webhook_listener() {
 
 	if ( $_SERVER['REQUEST_URI'] === '/servicebot/v1/stripe-hooks'){
 
-		Stripe::setApiKey('sk_test_Xf2X48WTwXe3SWgYS5codx0e00OMX5n6Ze');
-		$endpoint_secret = 'whsec_ENSrf2tDZZX7KXMMwxgVcCDDscAc8y75';
+		$live_mode = get_option('servicebot_servicebot_live_mode_global_setting') == 1 ? true : false;
+		if(!$live_mode){
+			$stripe_sign_secret = get_option('servicebot_servicebot_stripe_test_signing_secret_setting');
+			$stripe_secret_key = get_option('servicebot_servicebot_stripe_test_secret_key_setting');
+		}else{
+			$stripe_sign_secret = get_option('servicebot_servicebot_stripe_live_signing_secret_setting');
+			$stripe_secret_key = get_option('servicebot_servicebot_stripe_live_secret_key_setting');
+		}
+
+		Stripe::setApiKey($stripe_sign_secret);
+		$endpoint_secret = $stripe_sign_secret;
 		
 		$payload = @file_get_contents( 'php://input' );
 		$sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
@@ -167,11 +176,11 @@ function servicebot_webhook_listener() {
 			);
 		} catch(\UnexpectedValueException $e) {
 			// Invalid payload
-			http_response_code(400);
+			http_response_code(481);
 			exit();
 		} catch(\Stripe\Exception\SignatureVerificationException $e) {
 			// Invalid signature
-			http_response_code(400);
+			http_response_code(482);
 			exit();
 		}
 
@@ -213,7 +222,7 @@ function servicebot_webhook_listener() {
 			// ... handle other event types
 			default:
 				// Unexpected event type
-				http_response_code(400);
+				http_response_code(489);
 				exit();
 		}
 

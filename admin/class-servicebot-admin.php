@@ -62,7 +62,7 @@ class Servicebot_Admin {
 		add_menu_page(  $this->plugin_name, 'Servicebot', 'administrator', $this->plugin_name, array( $this, 'displayPluginAdminSettings' ), plugin_dir_url( __DIR__ ) . 'img/SB_FAVI 256x256.png', 26 );
 		
 		//add_submenu_page( '$parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
-		// add_submenu_page( $this->plugin_name, 'Plugin Name Settings', 'Settings', 'administrator', $this->plugin_name.'-settings', array( $this, 'displayPluginAdminSettings' ));
+		add_submenu_page( $this->plugin_name, 'Servicebot Stripe Webhooks', 'Stripe Webhooks', 'administrator', $this->plugin_name.'-stripe-webhooks', array( $this, 'displayPluginAdminStripeWebhooks' ));
 	}
 
 	public function displayPluginAdminSettings() {
@@ -73,6 +73,16 @@ class Servicebot_Admin {
 			do_action( 'admin_notices', $_GET['error_message'] );
 		}
 		require_once 'partials/'.$this->plugin_name.'-admin-display.php';
+	}
+
+	public function displayPluginAdminStripeWebhooks() {
+		// set this var to be used in the settings-display view
+		$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general';
+		if(isset($_GET['error_message'])){
+			add_action('admin_notices', array($this,'servicebotSettingsMessages'));
+			do_action( 'admin_notices', $_GET['error_message'] );
+		}
+		require_once 'partials/'.$this->plugin_name.'-admin-stripe-webhooks.php';
 	}
 
 	public function ServicebotSettingsMessages($error_message){
@@ -102,7 +112,7 @@ class Servicebot_Admin {
 			// ID used to identify this section and with which to register options
 			'servicebot_general_section', 
 			// Title to be displayed on the administration page
-			'Servicebot Embeddables Global Settings',  
+			'Embeddable Global Settings',  
 			// Callback used to render the description of the section
 			array( $this, 'servicebot_display_general_account' ),    
 			// Page on which to add this section of options
@@ -293,9 +303,121 @@ class Servicebot_Admin {
 			'servicebot_servicebot_live_mode_global_setting'
 		);
 
+		// Stripe webhooks section
+		add_settings_section(
+			// ID used to identify this section and with which to register options
+			'servicebot_stripe_webhooks_section', 
+			// Title to be displayed on the administration page
+			'',  
+			// Callback used to render the description of the section
+			array( $this, 'servicebot_display_stripe_webhooks' ),    
+			// Page on which to add this section of options
+			'servicebot_stripe_webhooks_settings'                   
+		);
+
+		unset($args);
+		$args = array (
+			'type'		=> 'input',
+			'subtype'	=> 'text',
+			'id'		=> 'servicebot_servicebot_stripe_test_secret_key_setting',
+			'name'		=> 'servicebot_servicebot_stripe_test_secret_key_setting',
+			'required' 	=> 'false',
+			'get_options_list' => '',
+			'value_type' => 'normal',
+			'wp_data' 	=> 'option'
+		);
+		add_settings_field(
+			'servicebot_servicebot_stripe_test_secret_key_setting',
+			'Stripe Test Secret Key',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_stripe_webhooks_section',
+			$args
+		);
+		register_setting(
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_servicebot_stripe_test_secret_key_setting'
+		);
+
+		unset($args);
+		$args = array (
+			'type'		=> 'input',
+			'subtype'	=> 'text',
+			'id'		=> 'servicebot_servicebot_stripe_live_secret_key_setting',
+			'name'		=> 'servicebot_servicebot_stripe_live_secret_key_setting',
+			'required' 	=> 'false',
+			'get_options_list' => '',
+			'value_type' => 'normal',
+			'wp_data' 	=> 'option'
+		);
+		add_settings_field(
+			'servicebot_servicebot_stripe_live_secret_key_setting',
+			'Stripe Live Secret Key',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_stripe_webhooks_section',
+			$args
+		);
+		register_setting(
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_servicebot_stripe_live_secret_key_setting'
+		);
+
+		unset($args);
+		$args = array (
+			'type'		=> 'input',
+			'subtype'	=> 'text',
+			'id'		=> 'servicebot_servicebot_stripe_test_signing_secret_setting',
+			'name'		=> 'servicebot_servicebot_stripe_test_signing_secret_setting',
+			'required' 	=> 'false',
+			'get_options_list' => '',
+			'value_type' => 'normal',
+			'wp_data' 	=> 'option'
+		);
+		add_settings_field(
+			'servicebot_servicebot_stripe_test_signing_secret_setting',
+			'Stripe Test Signing Secret',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_stripe_webhooks_section',
+			$args
+		);
+		register_setting(
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_servicebot_stripe_test_signing_secret_setting'
+		);
+
+		unset($args);
+		$args = array (
+			'type'		=> 'input',
+			'subtype'	=> 'text',
+			'id'		=> 'servicebot_servicebot_stripe_live_signing_secret_setting',
+			'name'		=> 'servicebot_servicebot_stripe_live_signing_secret_setting',
+			'required' 	=> 'false',
+			'get_options_list' => '',
+			'value_type' => 'normal',
+			'wp_data' 	=> 'option'
+		);
+		add_settings_field(
+			'servicebot_servicebot_stripe_live_signing_secret_setting',
+			'Stripe Live Signing Secret',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_stripe_webhooks_section',
+			$args
+		);
+		register_setting(
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_servicebot_stripe_live_signing_secret_setting'
+		);
+
 	}
 
 	public function servicebot_display_general_account() {
+		echo '<p></p>';
+	} 
+
+	public function servicebot_display_stripe_webhooks() {
 		echo '<p></p>';
 	} 
 
