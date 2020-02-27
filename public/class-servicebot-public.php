@@ -214,17 +214,75 @@ function servicebot_webhook_listener() {
 		switch ($event->type) {
 			case 'customer.subscription.created':
 				$subscription = $event->data->object;
+				$customer_id = $subscription->customer;
+				$product_id = $subscription['plan']['product'];
 				//check the subscription's product and make sure it's the same as 
 				//the sb_service configured in plugin settings
 				$sb_service = get_option('servicebot_servicebot_service_global_setting');
-				$subscription_sb_service = $subscription['metadata']['sb_service'];
-				if($sb_service == $subscription_sb_service){
-					$customer_id = $subscription->customer;
-					$customer = \Stripe\Customer::retrieve($customer_id);
-					servicebot_create_wp_user($customer);
-				}else{
+				//get the product using subscription obj's attached product id
+				try{
+					$product = \Stripe\Product::retrieve($product_id);
+					$product_sb_service = $product['metadata']['sb_service'];
+					// $subscription_sb_service = $subscription['metadata']['sb_service'];
+					if($sb_service == $product_sb_service){
+						$NUM_OF_ATTEMPTS = 5;
+						$attempts = 0;
+
+						do {
+							try
+							{
+								$customer = \Stripe\Customer::retrieve($customer_id);
+								//after getting a customer object, pass it to create wp user
+								if(!$customer['email']){
+									throw(new Exception('No customer retrieved'));
+								}
+								servicebot_create_wp_user($customer);
+								break;
+							} catch (Exception $e) {
+								$attempts++;
+								if(attempts == NUM_OF_ATTEMPTS-1){
+									//log something to alert site owner of the failure
+									wp_send_json_error( array(
+										"error"=> "We are unable to retrieve customer object with id $customer_id from the stripe account after $attempts retries to get the customer's email to create a wordpress user. Please create this wordpress user manually.",
+										"action" => "retrieve customer object via stripe API for $customer_id",
+										"attempt_counts" => $attempts,
+										"payload"=>array(
+											"customer_id" => $customer_id
+										),
+										"stripe_response" => array(
+											"customer_object" => $customer,
+										)
+									), 500 );
+								}
+								sleep(1);
+								continue;
+							}
+							break;
+						} while($attempts < $NUM_OF_ATTEMPTS);
+						
+					}else{
+						wp_send_json_error( array(
+							"error" => "Subscription is not created with the sb_service $sb_service you configured in your Wordpress Servicebot plugin. See Servicebot docs for more info. If you continue to have this issue and you think everything is setup correctly, please contact Servicebot for more help!",
+							"action" => "Validating the subscrption is created with a product with sb_service, this product must be the same as what is setup in your wordpress site's servicebot plugin settings.",
+							"info" => array(
+								"actual_product" => array(
+									"sb_service" => $product['metadata']['sb_service'],
+									"sb_tier" => $product['metadata']['sb_tier'],
+									"product_object" => $product,
+								)
+							)
+						), 500 );
+					}
+				}catch(Exception $e){
 					wp_send_json_error( array(
-						"error"=> "Subscription is not created with the sb_service you configured in your Wordpress Servicebot plugin. See Servicebot docs for more info."
+						"error"=> "We are unable to retrieve product with id $product_id to validate the sb_service setup is with this site from the stripe account, please create this user $customer_id manually.",
+						"action" => "retrieve product via stripe API for $product_id",
+						"payload" => array(
+							"product_id" => $product_id,
+						),
+						"stripe_response" => array(
+							"product_object" => $product,
+						)
 					), 500 );
 				}
 				break;
