@@ -163,12 +163,12 @@ function servicebot_create_wp_user($customer){
 			'message' => 'User created successfully.'
 		), 200 );
 	}else{
-		wp_send_json_error( array(  
+		wp_send_json( array(  
+			'info' => 'Unable to create user. The user with this email probably already exists in your Wordpress site.',
 			'email' => $email,
 			'name' => $name,
 			'password' => '*****',
-			'error' => 'Unable to create user. The user with this email probably already exists in your Wordpress site.',
-		), 500 );
+		), 200 );
 	}
 }
 
@@ -261,8 +261,8 @@ function servicebot_webhook_listener() {
 						} while($attempts < $NUM_OF_ATTEMPTS);
 						
 					}else{
-						wp_send_json_error( array(
-							"error" => "Subscription is not created with the sb_service $sb_service you configured in your Wordpress Servicebot plugin. See Servicebot docs for more info. If you continue to have this issue and you think everything is setup correctly, please contact Servicebot for more help!",
+						wp_send_json( array(
+							"message" => "Subscription is not created with the sb_service $sb_service you configured in your Wordpress Servicebot plugin. See Servicebot docs for more info. If you continue to have this issue and you think everything is setup correctly, please contact Servicebot for more help!",
 							"action" => "Validating the subscrption is created with a product with sb_service, this product must be the same as what is setup in your wordpress site's servicebot plugin settings.",
 							"info" => array(
 								"actual_product" => array(
@@ -271,11 +271,12 @@ function servicebot_webhook_listener() {
 									"product_object" => $product,
 								)
 							)
-						), 500 );
+						), 200 );
 					}
 				}catch(Exception $e){
 					wp_send_json_error( array(
 						"error"=> "We are unable to retrieve product with id $product_id to validate the sb_service setup is with this site from the stripe account, please create this user $customer_id manually.",
+						"info" => "Please make sure your servicebot wordpress plugin has the correct Stripe API keys set.",
 						"action" => "retrieve product via stripe API for $product_id",
 						"payload" => array(
 							"product_id" => $product_id,
