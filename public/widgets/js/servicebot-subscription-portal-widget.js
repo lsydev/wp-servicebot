@@ -31,7 +31,7 @@
     
     console.log("loaded servicebot widget js", php_props_sp_widget);
 
-    const { livemode, servicebot_id, hash, service, tier, interval, email, 
+    const { billing_page_id, livemode, servicebot_id, hash, service, tier, interval, email, 
             customer_id, subscription_id, coupon, options, create_user, is_logged_in, 
             logged_in_email, login_redirect_url, admin_ajax_url, embed_type, js_version } = php_props_sp_widget;
 
@@ -89,22 +89,37 @@
         parsedOptions.hideTiers = parsedOptions.hideTiers.split(',');
     if(parsedOptions.disableTiers && typeof parsedOptions.disableTiers == 'string')
         parsedOptions.disableTiers = parsedOptions.disableTiers.split(',');
-    
-    window.servicebotSettings = {
-        'servicebot_id': servicebot_id,
-        'email': logged_in_email || email || '',
-        'hash': hash,
-        'service': service,
-        'coupon': coupon,
-        'options' : parsedOptions,
-        'handleResponse' : handleResponse,
-        'type': embed_type,
-        'metadata': {
-            'embed_type': embed_type,
-            'plugin_type': 'wordpress',
-            'plugin_version': js_version,
+
+
+    if(billing_page_id){
+        window.servicebotSettings = {
+            'billing_page_id': billing_page_id,
+            'email': logged_in_email || email || '',
+            'hash': hash,
+            'handleResponse' : handleResponse,
+            'metadata': {
+                'serverside_config': true,
+                'widget_type': embed_type,
+                'plugin_type': 'wordpress',
+                'plugin_version': js_version,
+            }
         }
-        
+    }else{
+        window.servicebotSettings = {
+            'servicebot_id': servicebot_id,
+            'email': logged_in_email || email || '',
+            'hash': hash,
+            'service': service,
+            'coupon': coupon,
+            'options' : parsedOptions,
+            'handleResponse' : handleResponse,
+            'metadata': {
+                'widget_type': embed_type,
+                'plugin_type': 'wordpress',
+                'plugin_version': js_version,
+            }
+            
+        }
     }
 
     tier && (window.servicebotSettings.tier = tier);

@@ -121,7 +121,10 @@ class Servicebot {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-servicebot-public.php';
-
+		/**
+		 * The class responsible for defining all things related to the sb billing page widget
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/widgets/class-servicebot-billing-page-widget.php';
 		/**
 		 * The class responsible for defining all things related to the sb subscription portal widget
 		 */
