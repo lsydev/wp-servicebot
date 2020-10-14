@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Servicebot Subscription Portal Widget Plugin
+Plugin Name: Servicebot Billing Page Widget Plugin
 Plugin URI: http://www.wpexplorer.com/servicebot/
-Description: This plugin adds a servicebot subscription portal embed widget.
+Description: This plugin adds a servicebot billing page embed widget.
 Version: 1.0
 Author: Servicebot
 Author URI: https://servicebot.io
@@ -10,12 +10,12 @@ License: GPL2
 */
 
 // The widget class
-class Servicebot_Subscription_Portal_Widget extends WP_Widget {
+class Servicebot_Billing_Page_Widget extends WP_Widget {
 
 	// Main constructor
 	public function __construct() {
 		parent::__construct(
-			'servicebot_subscription_portal_widget',
+			'servicebot_Billing_Page_widget',
 			__( 'Servicebot Subscription Portal Widget', 'text_domain' ),
 			array(
 				'customize_selective_refresh' => true,
@@ -165,7 +165,7 @@ class Servicebot_Subscription_Portal_Widget extends WP_Widget {
         $logged_in_email = $logged_in_user->user_email;
         $login_url = wp_login_url($sb_login_redirect_url);
         $admin_ajax_url = admin_url("admin-ajax.php");
-
+        print_r($sb_secret);
         if($sb_secret && $logged_in_email){
             $hash = hash_hmac(
                 'sha256',
@@ -216,14 +216,14 @@ class Servicebot_Subscription_Portal_Widget extends WP_Widget {
         } else {
             $js_version = '1.0.0';
         }
-        wp_enqueue_script( 'servicebot_subscription_portal_widget', 
+        wp_enqueue_script( 'servicebot_billing_page_widget', 
                             plugin_dir_url( __FILE__ ) . 'js/servicebot-subscription-portal-widget.js',
                             array(),
                             $js_version,
                             true
                          );
     
-        wp_localize_script( 'servicebot_subscription_portal_widget', 
+        wp_localize_script( 'servicebot_billing_page_widget', 
                             'php_props_sp_widget', 
                             array(
                                 'billing_page_id' => $billing_page_id,
@@ -241,8 +241,8 @@ class Servicebot_Subscription_Portal_Widget extends WP_Widget {
                                 'logged_in_email' => $logged_in_email,
                                 'login_redirect_url' => $login_url,
                                 'admin_ajax_url'  => $admin_ajax_url,
-                                'widget'          => 'servicebo-subscription-portal-widget',
-                                'embed_type'      => 'portal',
+                                'widget'          => 'servicebo-billing-page-widget',
+                                'embed_type'      => 'billing_page',
                                 'js_version'      => $js_version
                             )
                           );
@@ -250,7 +250,7 @@ class Servicebot_Subscription_Portal_Widget extends WP_Widget {
         // Test handle response function hook
         wp_enqueue_script( 'servicebot_handle_response_js', 
                             plugin_dir_url( __FILE__ ) . 'js/servicebot-handle-response.js',
-                            array('servicebot_subscription_portal_widget'),
+                            array('servicebot_billing_page_widget'),
                             null,
                             true
                          );
@@ -261,24 +261,24 @@ class Servicebot_Subscription_Portal_Widget extends WP_Widget {
     }
 
     public function get_script_depends() {
-        return [ 'servicebot_subscription_portal_widget' ];
+        return [ 'servicebot_billing_page_widget' ];
     }
     
 }
 
 // Register the widget
-function servicebot_register_subscription_portal_widget() {
-	register_widget( 'Servicebot_Subscription_Portal_Widget' );
+function servicebot_register_billing_page_widget() {
+	register_widget( 'Servicebot_Billing_Page_Widget' );
 }
-add_action( 'widgets_init', 'servicebot_register_subscription_portal_widget' );
+add_action( 'widgets_init', 'servicebot_register_billing_page_widget' );
 
 // Add shortcode for the widget
-function shortcode_servicebot_subscription_portal_widget($params = array()) {
+function shortcode_servicebot_billing_page_widget($params = array()) {
 
     // default parameters
     extract(shortcode_atts(array(
         'title' => 'Subscription Portal',
-        'id'    => 'servicebot_subscription_portal_shotcode',
+        'id'    => 'servicebot_billing_page_shortcode',
         'depth' => 2
     ), $params));
 
@@ -296,7 +296,7 @@ function shortcode_servicebot_subscription_portal_widget($params = array()) {
 
     ob_start();
     echo '<!-- Widget Shortcode -->';
-    the_widget( 'Servicebot_Subscription_Portal_Widget', $params , array() );
+    the_widget( 'Servicebot_Billing_Page_Widget', $params , array() );
     echo '<!-- /Widget Shortcode -->';
     $content = ob_get_clean();
 
@@ -306,4 +306,4 @@ function shortcode_servicebot_subscription_portal_widget($params = array()) {
     echo $content;
 }
 
-add_shortcode('servicebot_subscription_portal_shortcode', 'shortcode_servicebot_subscription_portal_widget');
+add_shortcode('servicebot_billing_page_shortcode', 'shortcode_servicebot_billing_page_widget');
