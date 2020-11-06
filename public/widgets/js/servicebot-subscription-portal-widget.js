@@ -63,23 +63,14 @@
                     if(login_redirect_url){
                         window.location = login_redirect_url;
                     }
-
-                    // if(data != 0 && login_redirect_url){
-                    //     window.location = login_redirect_url;
-                    // }else if( data == 0 ){
-                    //     var message = document.createElement('div'); 
-                    //     message.innerText = "Subscription created! But the email already exist, please login to see your subscription."
-                    //     var embedContainer = document.querySelector('#servicebot-subscription-portal');
-                    //     embedContainer.parentNode.insertBefore(message, embedContainer)
-                    //     console.error("Subscription created but WP user alrady exist for", response.customer.email);
-                    // }
                 };
 
                 jQuery.post(ajax_url, payload, callback);
             }
 
-        }else{
-            console.log("No callback was called", event, response);
+        }
+        if(servicebot_wp_handle_response){
+            servicebot_wp_handle_response({event, response, extras})
         }
     }
     
