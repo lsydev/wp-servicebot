@@ -213,7 +213,7 @@ class Servicebot_Admin {
 
 		add_settings_field(
 			'servicebot_servicebot_service_global_setting',
-			'Servicebot Service',
+			'Servicebot Service (Default service to use for non-billing page widgets)',
 			array( $this, 'servicebot_render_settings_field' ),
 			'servicebot_general_settings',
 			'servicebot_general_section',

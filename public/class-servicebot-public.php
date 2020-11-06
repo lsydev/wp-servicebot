@@ -174,9 +174,12 @@ function servicebot_create_wp_user($customer){
 
 function servicebot_webhook_listener() {
 
-	register_rest_route( 'servicebot/v1', '/stripe-hooks', array(
-		'methods'  => 'POST'
-	  ) );
+	$rest_server = rest_get_server();
+	$rest_args = array(
+		'methods'  => 'POST',
+	);
+	$rest_server->register_route( 'servicebot/v1', '/stripe-hooks', $rest_args, false );
+	
 
 	if ( $_SERVER['REQUEST_URI'] === '/servicebot/v1/stripe-hooks'){
 
@@ -305,6 +308,8 @@ function servicebot_webhook_listener() {
 
 		http_response_code(200);
 	}
+
+	return $rest_server;
 }
 
-add_action( 'init', 'servicebot_webhook_listener' );
+add_action( 'wp_loaded', 'servicebot_webhook_listener' );
