@@ -1,6 +1,8 @@
 <?php
 
-require_once 'stripe/init.php';
+if(!class_exists('Stripe\Stripe')){
+	require_once 'stripe/init.php';
+}
 use Stripe\Stripe;
 use Stripe\Event;
 use Stripe\Webhook;
