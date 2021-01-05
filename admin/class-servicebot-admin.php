@@ -18,7 +18,7 @@
  *
  * @package    Servicebot
  * @subpackage Servicebot/admin
- * @author     Servicebot <team@servicebot.io>
+ * @author     Billflow <team@billflow.io>
  */
 class Servicebot_Admin {
 
@@ -59,10 +59,10 @@ class Servicebot_Admin {
 
 	public function addPluginAdminMenu() {
 		//add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
-		add_menu_page(  $this->plugin_name, 'Servicebot', 'administrator', $this->plugin_name, array( $this, 'displayPluginAdminSettings' ), plugin_dir_url( __DIR__ ) . 'img/SB_FAVI 256x256.png', 26 );
+		add_menu_page(  $this->plugin_name, 'Billflow', 'administrator', $this->plugin_name, array( $this, 'displayPluginAdminSettings' ), plugin_dir_url( __DIR__ ) . 'img/billflow-white-gradient.png', 26 );
 		
 		//add_submenu_page( '$parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
-		add_submenu_page( $this->plugin_name, 'Servicebot Stripe Webhooks', 'Stripe Webhooks', 'administrator', $this->plugin_name.'-stripe-webhooks', array( $this, 'displayPluginAdminStripeWebhooks' ));
+		add_submenu_page( $this->plugin_name, 'Billflow Stripe Webhooks', 'Stripe Webhooks', 'administrator', $this->plugin_name.'-stripe-webhooks', array( $this, 'displayPluginAdminStripeWebhooks' ));
 	}
 
 	public function displayPluginAdminSettings() {
@@ -104,75 +104,33 @@ class Servicebot_Admin {
 
 	public function registerAndBuildFields() {
 		/**
-	   * First, we add_settings_section. This is necessary since all future settings must belong to one.
-	   * Second, add_settings_field
-	   * Third, register_setting
-	   */     
+	     * First, we add_settings_section. This is necessary since all future settings must belong to one.
+	     * Second, add_settings_field
+	     * Third, register_setting
+	     */     
 		add_settings_section(
 			// ID used to identify this section and with which to register options
 			'servicebot_general_section', 
 			// Title to be displayed on the administration page
-			'Embeddable Global Settings',  
+			'',  
 			// Callback used to render the description of the section
 			array( $this, 'servicebot_display_general_account' ),    
 			// Page on which to add this section of options
 			'servicebot_general_settings'                   
 		);
 
-		unset($args);
-		$args = array (
-			'type'		=> 'input',
-			'subtype'	=> 'text',
-			'id'		=> 'servicebot_servicebot_id_global_setting',
-			'name'		=> 'servicebot_servicebot_id_global_setting',
-			'required' 	=> 'true',
-			'get_options_list' => '',
-			'value_type' => 'normal',
-			'wp_data' 	=> 'option'
+		add_settings_section(
+			// ID used to identify this section and with which to register options
+			'servicebot_integration_section', 
+			// Title to be displayed on the administration page
+			'',  
+			// Callback used to render the description of the section
+			array( $this, 'servicebot_display_general_account' ),    
+			// Page on which to add this section of options
+			'servicebot_integration_settings'                   
 		);
 
-		add_settings_field(
-			'servicebot_servicebot_id_global_setting',
-			'Test Mode Servicebot ID',
-			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_general_settings',
-			'servicebot_general_section',
-			$args
-		);
-
-		register_setting(
-			'servicebot_general_settings',
-			'servicebot_servicebot_id_global_setting'
-		);
-
-		// LIVE MODE -- servicebot id
-		unset($args);
-		$args = array (
-			'type'		=> 'input',
-			'subtype'	=> 'text',
-			'id'		=> 'servicebot_servicebot_id_live_global_setting',
-			'name'		=> 'servicebot_servicebot_id_live_global_setting',
-			'required' 	=> 'true',
-			'get_options_list' => '',
-			'value_type' => 'normal',
-			'wp_data' 	=> 'option'
-		);
-
-		add_settings_field(
-			'servicebot_servicebot_id_live_global_setting',
-			'Livemode Servicebot ID',
-			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_general_settings',
-			'servicebot_general_section',
-			$args
-		);
-
-		register_setting(
-			'servicebot_general_settings',
-			'servicebot_servicebot_id_live_global_setting'
-		);
-
-		// LIVE MODE -- secret key
+		// Billflow secret key
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
@@ -187,7 +145,7 @@ class Servicebot_Admin {
 
 		add_settings_field(
 			'servicebot_servicebot_secret_key_global_setting',
-			'Secret Key',
+			'Billflow Secret Key',
 			array( $this, 'servicebot_render_settings_field' ),
 			'servicebot_general_settings',
 			'servicebot_general_section',
@@ -199,32 +157,7 @@ class Servicebot_Admin {
 			'servicebot_servicebot_secret_key_global_setting'
 		);
 
-		unset($args);
-		$args = array (
-			'type'		=> 'input',
-			'subtype'	=> 'text',
-			'id'		=> 'servicebot_servicebot_service_global_setting',
-			'name'		=> 'servicebot_servicebot_service_global_setting',
-			'required' 	=> 'true',
-			'get_options_list' => '',
-			'value_type' => 'normal',
-			'wp_data' 	=> 'option'
-		);
-
-		add_settings_field(
-			'servicebot_servicebot_service_global_setting',
-			'Servicebot Service (Default service to use for non-billing page widgets)',
-			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_general_settings',
-			'servicebot_general_section',
-			$args
-		);
-
-		register_setting(
-			'servicebot_general_settings',
-			'servicebot_servicebot_service_global_setting'
-		);
-
+		// create WP user on signup?
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
@@ -238,46 +171,43 @@ class Servicebot_Admin {
 
 		add_settings_field(
 			'servicebot_servicebot_create_user_global_setting',
-			'Create WP user on signup?',
+			'Do you want to create a WordPress user when a customer signs up via a Billflow embed?',
 			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_general_settings',
-			'servicebot_general_section',
+			'servicebot_integration_settings',
+			'servicebot_integration_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_general_settings',
+			'servicebot_integration_settings',
 			'servicebot_servicebot_create_user_global_setting'
 		);
 
-		unset($args);
-		$args = array (
-			'type'		=> 'input',
-			'subtype'	=> 'text',
-			'id'		=> 'servicebot_servicebot_login_redirect_url_global_setting',
-			'name'		=> 'servicebot_servicebot_login_redirect_url_global_setting',
-			'required' 	=> 'true',
-			'get_options_list' => '',
-			'value_type' => 'normal',
-			'wp_data' 	=> 'option'
+		// Stripe webhooks section
+		add_settings_section(
+			// ID used to identify this section and with which to register options
+			'servicebot_stripe_webhooks_section', 
+			// Title to be displayed on the administration page
+			'',  
+			// Callback used to render the description of the section
+			array( $this, 'servicebot_display_stripe_webhooks' ),    
+			// Page on which to add this section of options
+			'servicebot_stripe_webhooks_settings'                   
 		);
 
-		add_settings_field(
-			'servicebot_servicebot_login_redirect_url_global_setting',
-			'Login redirect URL, where to take your user after they signed up and logged in.',
-			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_general_settings',
-			'servicebot_general_section',
-			$args
+		// Stripe webhooks section - options
+		add_settings_section(
+			// ID used to identify this section and with which to register options
+			'servicebot_stripe_webhooks_options_section', 
+			// Title to be displayed on the administration page
+			'',  
+			// Callback used to render the description of the section
+			array( $this, 'servicebot_display_stripe_options_webhooks' ),    
+			// Page on which to add this section of options
+			'servicebot_stripe_webhooks_options_settings'             
 		);
 
-		register_setting(
-			'servicebot_general_settings',
-			'servicebot_servicebot_login_redirect_url_global_setting'
-		);
-
-
-		// Livemode toggle
+		// Livemode toggle -- this should belong to webhooks, should webhook be listening to live mode or test mode
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
@@ -291,28 +221,16 @@ class Servicebot_Admin {
 
 		add_settings_field(
 			'servicebot_servicebot_live_mode_global_setting',
-			'Live Mode',
+			'Integartion Live Mode',
 			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_general_settings',
-			'servicebot_general_section',
+			'servicebot_stripe_webhooks_options_settings',
+			'servicebot_stripe_webhooks_options_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_general_settings',
+			'servicebot_stripe_webhooks_options_settings',
 			'servicebot_servicebot_live_mode_global_setting'
-		);
-
-		// Stripe webhooks section
-		add_settings_section(
-			// ID used to identify this section and with which to register options
-			'servicebot_stripe_webhooks_section', 
-			// Title to be displayed on the administration page
-			'',  
-			// Callback used to render the description of the section
-			array( $this, 'servicebot_display_stripe_webhooks' ),    
-			// Page on which to add this section of options
-			'servicebot_stripe_webhooks_settings'                   
 		);
 
 		unset($args);
@@ -420,6 +338,10 @@ class Servicebot_Admin {
 	public function servicebot_display_stripe_webhooks() {
 		echo '<p></p>';
 	} 
+
+	public function servicebot_display_stripe_options_webhooks() {
+		echo '<p></p>';
+	}
 
 	public function servicebot_render_settings_field($args) {
 		/* EXAMPLE INPUT

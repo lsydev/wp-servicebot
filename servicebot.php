@@ -8,17 +8,17 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              servicebot.io
+ * @link              billflow.io
  * @since             1.0.0
  * @package           Servicebot
  *
  * @wordpress-plugin
- * Plugin Name:       Servicebot
+ * Plugin Name:       Billflow
  * Plugin URI:        http://www.wpexplorer.com/servicebot/
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.1.11
- * Author:            Servicebot
- * Author URI:        https://servicebot.io
+ * Description:       Breaking Change!! If you are on version 1.x.x, please perform a full test on this version 2.0.0 update in your test site before going live!! We rebranded Servicebot to become Billflow starting in 2021.
+ * Version:           2.0.0
+ * Author:            Billflow
+ * Author URI:        https://billflow.io
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       servicebot
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SERVICEBOT_VERSION', '1.1.11' );
+define( 'SERVICEBOT_VERSION', '2.0.0' );
 
 /**
  * The code that runs during plugin activation.
