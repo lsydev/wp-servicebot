@@ -203,7 +203,7 @@ class Servicebot_Signup_Portal_Widget extends WP_Widget {
         
         // Display the widget
         $render_div = '<div class="widget-text wp_widget_plugin_box">
-                            <div id="servicebot-subscription-portal"></div>
+                            <div id="billflow-embed"></div>
                        </div>';
 
         print($render_div);

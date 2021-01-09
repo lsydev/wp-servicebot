@@ -92,7 +92,7 @@
     subscription_id && (window.servicebotSettings.subscription_id = subscription_id);
 
 
-    if(document.querySelector('#servicebot-subscription-portal')){
+    if(document.querySelector("#billflow-embed")){
         if(window.location.host == 'servicebot-wordpress.docksal'){
             (function () { 
                 var s = document.createElement("script"); 
@@ -104,14 +104,14 @@
         }else{
             (function () { 
                 var s = document.createElement('script'); 
-                s.src = 'https://js.servicebot.io/embeds/servicebot-billing-settings-embed.js'; 
+                s.src = 'https://js.billflow.io/embeds/billflow-embed.js'; 
                 s.async = true; 
                 s.type = 'text/javascript'; 
                 var x = document.getElementsByTagName('script')[0]; 
                 x.parentNode.insertBefore(s, x); })();
         }
     }else{
-        console.warn("Please make sure <div id='servicebot-subscription-portal'></div> is on the page. You can ignore this warning if you are on the Wordpress editor.")
+        console.log("Please make sure <div id='billflow-embed'></div> is on the page. You can ignore this warning if you are on the Wordpress editor.")
     }
     
 })( jQuery );
