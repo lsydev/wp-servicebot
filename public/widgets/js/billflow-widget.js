@@ -23,39 +23,44 @@
 	 *
 	 * ...and/or other possibilities.
 	 *
-	 * Ideally, it is not considered best practise to attach more than a
+	 * Ideally, it is not considered best practice to attach more than a
 	 * single DOM-ready or window-load handler for a particular page.
 	 * Although scripts in the WordPress core, Plugins and Themes may be
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
-    const { billing_page_id, livemode, hash, email, 
-            customer_id, subscription_id, create_user, is_logged_in, 
-            logged_in_email, login_redirect_url, admin_ajax_url, embed_type, js_version } = php_props_billflow_settings;
+    const { billing_page_id, livemode, hash, email, customer_id } = php_props_billflow_settings
+    const { subscription_id, create_user, is_logged_in, logged_in_email } = php_props_billflow_settings
+    const { login_redirect_url, admin_ajax_url, embed_type, js_version } = php_props_billflow_settings;
 
     function handleResponse ({event, response, extras}) {
         if(event === "create_subscription" && create_user == 1){
-            console.log("create_subscription event callback", response, extras);
-            let email    = response.customer.email;
-            let username = response.customer.email.substring(0, email.lastIndexOf("@"));
-            let password = extras ? extras.password : null;
-
-            var ajax_url = admin_ajax_url;
+            console.debug("create_subscription event callback", response, extras);
+            const email    = response.customer.email;
+            const username = response.customer.email.substring(0, email.lastIndexOf("@"));
+            const password = extras ? extras.password : null;
+            const ajax_url = admin_ajax_url;
 
             if(event === "create_subscription" && !logged_in_email){
-                console.log("Creating user", response, extras);
-                let payload = {
+                console.debug("Creating user", response, extras);
+                const payload = {
                     action: "create_user", 
                     email: response.customer.email, 
                     name: username,
                     password: password
                 };
 
-                let callback = function(data) {
-                    console.log("create_subscription create_user callback", data)
+                const createSubscriptionCallback = function(data) {
+                    console.debug("create_subscription create_user callback", data)
 
+                    /**
+                     * deprecated: to be removed in 2022
+                     */
                     if(servicebot_wp_handle_response_create_subscription){
                         servicebot_wp_handle_response_create_subscription({event, response, extras});
+                    }
+                    if(billflow_wp_handle_response_create_subscription){
+                        billflow_wp_handle_response_create_subscription({event, response, extras});
                     }
 
                     if(login_redirect_url){
@@ -63,12 +68,19 @@
                     }
                 };
 
-                jQuery.post(ajax_url, payload, callback);
+                jQuery.post(ajax_url, payload, createSubscriptionCallback);
             }
 
         }
-        if(servicebot_wp_handle_response){
+        /**
+         * deprecated: to be removed in 2022
+         */
+        if(window.servicebot_wp_handle_response || servicebot_wp_handle_response){
             servicebot_wp_handle_response({event, response, extras})
+        }
+        if(window.billflow_wp_handle_response){
+            console.debug("billflow_wp_handle_response")
+            billflow_wp_handle_response({event, response, extras})
         }
     }
 
@@ -86,8 +98,7 @@
     }
 
     window.servicebotSettings = settings
-    console.log(settings)
-
+    window.billflowSettings = settings
     customer_id && (window.servicebotSettings.customer_id = customer_id);
     subscription_id && (window.servicebotSettings.subscription_id = subscription_id);
 
