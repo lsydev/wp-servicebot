@@ -32,6 +32,22 @@
     const { billing_page_id, livemode, hash, email, customer_id } = php_props_billflow_settings
     const { subscription_id, create_user, is_logged_in, logged_in_email } = php_props_billflow_settings
     const { login_redirect_url, admin_ajax_url, embed_type, js_version } = php_props_billflow_settings;
+    const { logged_out_only, logged_in_only, gated } = php_props_billflow_settings;
+
+    if((logged_in_only || gated) && !is_logged_in){
+        if(logged_in_only === "true" || gated === "true"){
+            window.location.replace(login_redirect_url + "?redirect_to=" + window.location.pathname + window.location.search)
+        }else{
+            window.location.href = logged_in_only || gated
+        }
+    }
+    if(logged_out_only && is_logged_in){
+        if(logged_out_only === "true"){
+            window.location.href = '/'
+        }else{
+            window.location.href = logged_out_only
+        }
+    }
 
     function handleResponse ({event, response, extras}) {
         if(event === "create_subscription" && create_user == 1){

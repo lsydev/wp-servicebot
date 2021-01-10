@@ -113,6 +113,9 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         extract( $args );
 
         // Check the widget options
+        $logged_in_only  = isset( $instance['logged_in_only'] ) ? apply_filters('widget_logged_in_only', $instance['logged_in_only']) : false;
+        $logged_out_only = isset( $instance['logged_out_only'] ) ? apply_filters('widget_logged_out_only', $instance['logged_out_only']) : false;
+        $gated = isset( $instance['gated'] ) ? apply_filters('widget_gated', $instance['gated']) : false;
         $billing_page_id = isset( $instance['billing_page_id'] ) ? apply_filters( 'widget_billing_page_id', $instance['billing_page_id'] ) : '';
         $sb_secret       = $this->secret_key;
         $email           = isset( $instance['email'] ) ? apply_filters( 'widget_email', $instance['email'] ) : '';
@@ -169,6 +172,9 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         
 
         $js_settings = array(
+            'logged_in_only'  => $logged_in_only,
+            'logged_out_only' => $logged_out_only,
+            'gated'           => $gated,
             'billing_page_id' => $billing_page_id,
             'hash'            => isset($hash) ? $hash : '',
             'email'           => $logged_in_email ? $logged_in_email : $email,
@@ -227,6 +233,10 @@ function shortcode_servicebot_billing_page_widget($params = array()) {
         'title' => 'Billing Page',
         'id'    => 'billflow_shortcode',
         'billing_page_id' => 'billing_page_id',
+        'logged_out_only' => 'logged_out_only', // takes a redirect url to send user to if they are logged in
+        'logged_in_only' => 'logged_in_only', // takes a redirect url to send user to if they are logged out, default to wp_login page
+        'gated' => 'gated', // takes a redirect url to send user to if they are logged out, default to wp_login page
+        'role' => 'role', // takes a role name
         'depth' => 2
     ), $params));
 
