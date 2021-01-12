@@ -285,13 +285,13 @@ function shortcode_servicebot_subscription_portal_widget($params = array()) {
     /*
     * @note: for backward compatibility: allow overriding widget args through the shortcode parameters
     */
-    $widget_args = shortcode_atts( array(
-        'before_widget' => '<' . $container_tag . ' id="' . $container_id . '" class="' . $container_class . '">',
-        'before_title' => '<' . $title_tag . ' class="' . $title_class . '">',
-        'after_title' => '</' . $title_tag . '>',
-        'after_widget' => '</' . $container_tag . '>',
-    ), $params );
-    extract( $widget_args );
+    // $widget_args = shortcode_atts( array(
+    //     'before_widget' => '<' . $container_tag . ' id="' . $container_id . '" class="' . $container_class . '">',
+    //     'before_title' => '<' . $title_tag . ' class="' . $title_class . '">',
+    //     'after_title' => '</' . $title_tag . '>',
+    //     'after_widget' => '</' . $container_tag . '>',
+    // ), $params );
+    // extract( $widget_args );
   
 
     ob_start();
@@ -300,8 +300,8 @@ function shortcode_servicebot_subscription_portal_widget($params = array()) {
     echo '<!-- /Widget Shortcode -->';
     $content = ob_get_clean();
 
-    if ( $echo !== true )
-        return $content;
+    // if ( $echo !== true )
+    //     return $content;
 
     echo $content;
 }
