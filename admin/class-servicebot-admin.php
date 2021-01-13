@@ -145,7 +145,7 @@ class Servicebot_Admin {
 
 		add_settings_field(
 			'servicebot_servicebot_secret_key_global_setting',
-			'Billflow Secret Key',
+			'<p><label>Billflow Secret Key</p></label>',
 			array( $this, 'servicebot_render_settings_field' ),
 			'servicebot_general_settings',
 			'servicebot_general_section',
@@ -172,7 +172,7 @@ class Servicebot_Admin {
 
 		add_settings_field(
 			'servicebot_servicebot_create_user_global_setting',
-			'Do you want to create a WordPress user when a customer signs up via a Billflow embed?',
+			'<p><label>Do you want to create a WordPress user when a customer signs up via a Billflow embed?</label></p>',
 			array( $this, 'servicebot_render_settings_field' ),
 			'servicebot_general_settings',
 			'servicebot_integration_section',
