@@ -62,7 +62,6 @@
 
 <?php
 	$servicebot_secret_key = get_option('servicebot_servicebot_secret_key_global_setting');
-	print($servicebot_secret_key);
 ?>
 
 <div class="wrap">
@@ -96,19 +95,22 @@
 		<?php settings_errors(); ?>  
 		<form method="POST" action="options.php">  
 			<section>
-			<?php 
-				settings_fields( 'servicebot_general_settings' );
-				do_settings_sections( 'servicebot_general_settings' ); 
-			?>
+				<p>
+					<?php 
+						settings_fields( 'servicebot_general_settings' );
+						do_settings_fields('servicebot_general_settings', 'servicebot_general_section' ); 
+					?>
+				</p>
 			</section>
 			<hr/>
 			<h3>Step 2</h3>
 			<p>Setup your integration options.</p>
 			<section>
-			<?php 
-				settings_fields( 'servicebot_integration_settings' );
-				do_settings_sections( 'servicebot_integration_settings' ); 
-			?>
+				<p>
+					<?php 
+						do_settings_fields('servicebot_general_settings', 'servicebot_integration_section' ); 
+					?>
+				</p>
 			</section>
 			<hr/>
 			<?php submit_button(); ?>  

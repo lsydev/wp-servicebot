@@ -127,7 +127,7 @@ class Servicebot_Admin {
 			// Callback used to render the description of the section
 			array( $this, 'servicebot_display_general_account' ),    
 			// Page on which to add this section of options
-			'servicebot_integration_settings'                   
+			'servicebot_general_settings'                   
 		);
 
 		// Billflow secret key
@@ -174,13 +174,13 @@ class Servicebot_Admin {
 			'servicebot_servicebot_create_user_global_setting',
 			'Do you want to create a WordPress user when a customer signs up via a Billflow embed?',
 			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_integration_settings',
+			'servicebot_general_settings',
 			'servicebot_integration_section',
 			$args
 		);
 
 		register_setting(
-			'servicebot_integration_settings',
+			'servicebot_general_settings',
 			'servicebot_servicebot_create_user_global_setting'
 		);
 
