@@ -166,7 +166,8 @@ class Servicebot_Admin {
 			'name'		=> 'servicebot_servicebot_create_user_global_setting',
 			'get_options_list' => '',
 			'value_type' => 'normal',
-			'wp_data' 	=> 'option'
+			'wp_data' 	=> 'option',
+			'required'  => false
 		);
 
 		add_settings_field(
@@ -216,7 +217,8 @@ class Servicebot_Admin {
 			'name'		=> 'servicebot_servicebot_live_mode_global_setting',
 			'get_options_list' => '',
 			'value_type' => 'normal',
-			'wp_data' 	=> 'option'
+			'wp_data' 	=> 'option',
+			'required' => false
 		);
 
 		add_settings_field(
