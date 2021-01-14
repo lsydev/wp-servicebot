@@ -1,4 +1,4 @@
-=== Subscription Billing by Servicebot ===
+=== Subscription Billing by Billflow ===
 Contributors: servicebot
 Tags: stripe,subscriptions,payments,pricing page,subscription management
 Requires at least: 5.0
@@ -11,7 +11,7 @@ Stable tag: trunk
 Integrate Stripe Billing with your Wordpress site in minutes. Allow customers to view pricing, signup, and manage subscriptions.
 
 == Description ==
-Launch a subscription business faster than ever with the Stripe Billing plugin by Servicebot. 
+Launch a subscription business faster than ever with the Stripe Billing plugin by Billflow. 
 This plugin automatically connects your Stripe account to your Wordpress site allowing you to show beautiful pricing pages, take payments for Stripe Subscriptions, and let customers manage their accounts. The plugin uses Wordpress's default user authentication to allow your customers to log-in and manage their subscriptions. 
 Features:
  * Beautiful Pricing pages that can handle any Stripe pricing model
@@ -28,11 +28,11 @@ Features:
 STEP-BY-STEP INSTRUCTIONS
 Log in to your site's dashboard (e.g. www.yourdomain.com/wp-admin).
 Click on the "Plugins" tab in the left panel, then click "Add New".
-Search for "Servicebot" and find the plugin.
+Search for "Billflow" and find the plugin.
 Install it by clicking the "Install Now" link.
 When installation finishes, click "Activate Plugin".
 
-Continue on with documentation [here](https://docs.servicebot.io/subscription-portal/integrations/wordpress)
+Continue on with documentation [here](https://docs.billflow.io/subscription-portal/integrations/wordpress)
 
 
 == Frequently Asked Questions ==
@@ -40,17 +40,17 @@ Continue on with documentation [here](https://docs.servicebot.io/subscription-po
   
 This is supported by every Stripe supported country. Go [here](https://stripe.com/global) to see if Stripe is available in your country. 
 
-= Do I need to have a Servicebot account? =
+= Do I need to have a Billflow account? =
   
-Yes, the plugin is there to connect your wordpress with your Servicebot account. You can signup [here](https://dashboard.servicebot.io/signup). 
+Yes, the plugin is there to connect your wordpress with your Billflow account. You can signup [here](https://dashboard.billflow.io/signup). 
 
 = Can I change the style of these pages? =
   
-Yes you can, check out our docs here to learn more about styling these pages [here](https://docs.servicebot.io/subscription-portal/pricing-page/customize-style-and-features-of-pricing-page). 
+Yes you can, check out our docs here to learn more about styling these pages [here](https://docs.billflow.io/subscription-portal/pricing-page/customize-style-and-features-of-pricing-page). 
 
 = Where is the documentation for the plugin? =
   
-Join us [here](https://docs.servicebot.io/subscription-portal/integrations/wordpress), and feel free to message us on our website with any questions.
+Join us [here](https://docs.billflow.io/subscription-portal/integrations/wordpress), and feel free to message us on our website with any questions.
 
 == Screenshots ==
 1. Pricing Pages

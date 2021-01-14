@@ -181,9 +181,10 @@ function servicebot_webhook_listener() {
 		'methods'  => 'POST',
 	);
 	$rest_server->register_route( 'servicebot/v1', '/stripe-hooks', $rest_args, false );
+	$rest_server->register_route( 'billflow/v1', '/stripe-hooks', $rest_args, false );
 	
 
-	if ( $_SERVER['REQUEST_URI'] === '/servicebot/v1/stripe-hooks'){
+	if ( $_SERVER['REQUEST_URI'] === '/servicebot/v1/stripe-hooks' || $_SERVER['REQUEST_URI'] === '/billflow/v1/stripe-hooks'){
 
 		$live_mode = get_option('servicebot_servicebot_live_mode_global_setting') == 1 ? true : false;
 		if(!$live_mode){
@@ -267,8 +268,8 @@ function servicebot_webhook_listener() {
 						
 					}else{
 						wp_send_json( array(
-							"message" => "Subscription is not created with the sb_service $sb_service you configured in your Wordpress Servicebot plugin. See Servicebot docs for more info. If you continue to have this issue and you think everything is setup correctly, please contact Servicebot for more help!",
-							"action" => "Validating the subscrption is created with a product with sb_service, this product must be the same as what is setup in your wordpress site's servicebot plugin settings.",
+							"message" => "Subscription is not created with the sb_service $sb_service you configured in your Billflow Wordpress plugin. See Billflow docs for more info. If you continue to have this issue and you think everything is setup correctly, please contact Servicebot for more help!",
+							"action" => "Validating the subscrption is created with a product with sb_service, this product must be the same as what is setup in your wordpress site's Billflow plugin settings.",
 							"info" => array(
 								"actual_product" => array(
 									"sb_service" => $product['metadata']['sb_service'],
@@ -281,7 +282,7 @@ function servicebot_webhook_listener() {
 				}catch(Exception $e){
 					wp_send_json_error( array(
 						"error"=> "We are unable to retrieve product with id $product_id to validate the sb_service setup is with this site from the stripe account, please create this user $customer_id manually.",
-						"info" => "Please make sure your servicebot wordpress plugin has the correct Stripe API keys set.",
+						"info" => "Please make sure your Billflow WordPress plugin has the correct Stripe API keys set.",
 						"action" => "retrieve product via stripe API for $product_id",
 						"payload" => array(
 							"product_id" => $product_id,
