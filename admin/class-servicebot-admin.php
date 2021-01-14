@@ -196,45 +196,6 @@ class Servicebot_Admin {
 			'servicebot_stripe_webhooks_settings'                   
 		);
 
-		// Stripe webhooks section - options
-		add_settings_section(
-			// ID used to identify this section and with which to register options
-			'servicebot_stripe_webhooks_options_section', 
-			// Title to be displayed on the administration page
-			'',  
-			// Callback used to render the description of the section
-			array( $this, 'servicebot_display_stripe_options_webhooks' ),    
-			// Page on which to add this section of options
-			'servicebot_stripe_webhooks_options_settings'             
-		);
-
-		// Livemode toggle -- this should belong to webhooks, should webhook be listening to live mode or test mode
-		unset($args);
-		$args = array (
-			'type'		=> 'input',
-			'subtype'	=> 'checkbox',
-			'id'		=> 'servicebot_servicebot_live_mode_global_setting',
-			'name'		=> 'servicebot_servicebot_live_mode_global_setting',
-			'get_options_list' => '',
-			'value_type' => 'normal',
-			'wp_data' 	=> 'option',
-			'required' => false
-		);
-
-		add_settings_field(
-			'servicebot_servicebot_live_mode_global_setting',
-			'Integartion Live Mode',
-			array( $this, 'servicebot_render_settings_field' ),
-			'servicebot_stripe_webhooks_options_settings',
-			'servicebot_stripe_webhooks_options_section',
-			$args
-		);
-
-		register_setting(
-			'servicebot_stripe_webhooks_options_settings',
-			'servicebot_servicebot_live_mode_global_setting'
-		);
-
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
@@ -329,6 +290,33 @@ class Servicebot_Admin {
 		register_setting(
 			'servicebot_stripe_webhooks_settings',
 			'servicebot_servicebot_stripe_live_signing_secret_setting'
+		);
+
+		// Livemode toggle -- this should belong to webhooks, should webhook be listening to live mode or test mode
+		unset($args);
+		$args = array (
+			'type'		=> 'input',
+			'subtype'	=> 'checkbox',
+			'id'		=> 'servicebot_servicebot_live_mode_global_setting',
+			'name'		=> 'servicebot_servicebot_live_mode_global_setting',
+			'get_options_list' => '',
+			'value_type' => 'normal',
+			'wp_data' 	=> 'option',
+			'required' => false
+		);
+
+		add_settings_field(
+			'servicebot_servicebot_live_mode_global_setting',
+			'Webhook Live Mode (Uncheck for Test Mode)',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_stripe_webhooks_section',
+			$args
+		);
+
+		register_setting(
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_servicebot_live_mode_global_setting'
 		);
 
 	}

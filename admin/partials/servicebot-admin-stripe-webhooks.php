@@ -46,13 +46,6 @@
 				<li>Select <i class="highlighted">customer.created</i> for the event to send input box.</li>
 				<li>Click <i class="highlighted">Add endpoint</i> to save</li>
 			</ol>
-			<hr/>
-			<h3>Step 3</h3>
-			<p>Toggle webhooks to listen to Stripe live account when you are ready.</p>
-			<?php 
-				settings_fields( 'servicebot_stripe_webhooks_options_settings' );
-				do_settings_sections( 'servicebot_stripe_webhooks_options_settings' ); 
-			?> 
 		</section>
 		<hr/>
 		<?php submit_button(); ?>  
