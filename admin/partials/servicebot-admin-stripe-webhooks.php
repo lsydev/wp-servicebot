@@ -38,11 +38,11 @@
             <p><i>You will need to configure this for both live and test mode in Stripe. 
             Your WordPress Integration is running in <?php echo $live_mode ? 'live' : 'test'?> mode now.</i></p>
 			<ol>
-				<li>Copy this into your clipboard <code><?php echo get_site_url(); ?>/servicebot/v1/stripe-hooks</code></li>
+				<li>Copy this into your clipboard <code><?php echo get_site_url(); ?>/billflow/v1/stripe-hooks</code></li>
 				<li>Setup <b>test</b> mode webhooks here: <a target="_blank" href="https://dashboard.stripe.com/test/webhooks">https://dashboard.stripe.com/test/webhooks</a></li>
 				<li>Setup <b>live</b> mode webhooks here: <a target="_blank" href="https://dashboard.stripe.com/webhooks">https://dashboard.stripe.com/live/webhooks</a></li>
 				<li>Click on the <i class="highlighted">Add endpoint</i> button</li>
-				<li>Paste <i class="highlighted"><?php echo get_site_url(); ?>/servicebot/v1/stripe-hooks</i> into the Endpoint URL input box</li>
+				<li>Paste <i class="highlighted"><?php echo get_site_url(); ?>/billflow/v1/stripe-hooks</i> into the Endpoint URL input box</li>
 				<li>Select <i class="highlighted">customer.created</i> for the event to send input box.</li>
 				<li>Click <i class="highlighted">Add endpoint</i> to save</li>
 			</ol>
