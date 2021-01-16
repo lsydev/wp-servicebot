@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Servicebot Billing Page Widget Plugin
+Plugin Name: Billflow Billing Page Widget Plugin
 Plugin URI: http://www.wpexplorer.com/servicebot/
-Description: This plugin adds a servicebot billing page embed widget.
+Description: This plugin adds a Billflow billing page embed widget.
 Version: 1.0
-Author: Servicebot
+Author: Billflow
 Author URI: https://servicebot.io
 License: GPL2
 */
@@ -16,23 +16,19 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'servicebot_Billing_Page_widget',
-			__( 'Servicebot Subscription Portal Widget', 'text_domain' ),
+			__( 'Billflow Billing Page Widget', 'text_domain' ),
 			array(
 				'customize_selective_refresh' => true,
 			)
         );
 
         $this->global_values = array(
-            'servicebot_id' => get_option('servicebot_servicebot_id_global_setting'),
-            'servicebot_id_live' => get_option('servicebot_servicebot_id_live_global_setting'),
             'secret_key' => get_option('servicebot_servicebot_secret_key_global_setting'),
-            'service' => get_option('servicebot_servicebot_service_global_setting'),
             'create_user' => get_option('servicebot_servicebot_create_user_global_setting'),
             'login_redirect_url' => get_option('servicebot_servicebot_login_redirect_url_global_setting'),
         );
 
         $this->livemode = get_option('servicebot_servicebot_live_mode_global_setting') == 1 ? true : false;
-        $this->servicebot_id = $this->livemode ? $this->global_values['servicebot_id_live'] : $this->global_values['servicebot_id'];
         $this->secret_key = $this->global_values['secret_key'];
     }
 
@@ -42,12 +38,9 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
 		// Set widget defaults
 		$defaults = array(
             'title'           => '',
-            'service'         => '',
             'email'           => '',
             'customer_id'     => '',
             'subscription_id' => '',
-            'coupon'          => '',
-            'embed_options'   => '',
             'create_user'     => '',
             'sb_login_redirect_url' => '',
 		);
@@ -63,16 +56,8 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
                 <td><?php print($this->livemode ? 'Live Mode' : 'Test Mode'); ?></td>
             </tr>
             <tr>
-                <td>Servicebot Id</td>
-                <td><?php print($this->servicebot_id); ?></td>
-            </tr>
-            <tr>
                 <td>Secret Key</td>
                 <td><?php print(($this->secret_key) ? "Set!" : "<a href='/wp-admin/admin.php?page=servicebot'>Settings</a>"); ?></td>
-            </tr>
-            <tr>
-                <td>Service</td>
-                <td><?php print($this->global_values['service']); ?></td>
             </tr>
             <tr>
                 <td>Create User?</td>
@@ -85,14 +70,6 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         </table>
 
         <b>Configure Embed</b>
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Widget Title (Optional)', 'text_domain' ); ?></label>
-			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
-		</p>
-        <p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'service' ) ); ?>"><?php _e( 'Sb Service', 'text_domain' ); ?></label>
-			<input required class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'service' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'service' ) ); ?>" type="text" value="<?php echo esc_attr( $service ? $service : $this->global_values['service'] ); ?>" />
-		</p>
         <p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'email' ) ); ?>"><?php _e( 'Customer Email (Optional)', 'text_domain' ); ?></label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'email' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'email' ) ); ?>" type="text" value="<?php echo esc_attr( $email ); ?>" />
@@ -105,15 +82,7 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
 			<label for="<?php echo esc_attr( $this->get_field_id( 'subscription_id' ) ); ?>"><?php _e( 'Subscription ID (Optional)', 'text_domain' ); ?></label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'subscription_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'subscription_id' ) ); ?>" type="text" value="<?php echo esc_attr( $subscription_id ); ?>" />
 		</p>
-        <p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'coupon' ) ); ?>"><?php _e( 'Pre-applied Coupon (Optional)', 'text_domain' ); ?></label>
-			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'coupon' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'coupon' ) ); ?>" type="text" value="<?php echo esc_attr( $coupon ); ?>" />
-		</p>
-        <p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'embed_options' ) ); ?>"><?php _e( 'Embed Options JSON', 'text_domain' ); ?></label>
-			<textarea rows="10" class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'embed_options' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'embed_options' ) ); ?>"><?php echo esc_attr($embed_options); ?></textarea>
-		</p>
-
+        
         <b>Configure Behavior</b>
 		<p>
 			<input id="<?php echo esc_attr( $this->get_field_id( 'create_user' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'create_user' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $create_user ? $create_user : (!!$this->global_values['create_user'])); ?> />
@@ -128,14 +97,11 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
 
 	// Update widget settings
 	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
-        $instance['title']          = isset( $new_instance['title'] ) ? wp_strip_all_tags( $new_instance['title'] ) : '';
-        $instance['service']        = isset( $new_instance['service'] ) ? wp_strip_all_tags( $new_instance['service'] ) : '';
+        $instance = $old_instance;
+        $instance['billing_page_id'] = isset( $new_instance['billing_page_id'] ) ? wp_strip_all_tags( $new_instance['billing_page_id'] ) : '';
         $instance['email']          = isset( $new_instance['email'] ) ? wp_strip_all_tags( $new_instance['email'] ) : '';
         $instance['customer_id']    = isset( $new_instance['customer_id'] ) ? wp_strip_all_tags( $new_instance['customer_id'] ) : '';
         $instance['subscription_id']        = isset( $new_instance['subscription_id'] ) ? wp_strip_all_tags( $new_instance['subscription_id'] ) : '';
-        $instance['coupon']                 = isset( $new_instance['coupon'] ) ? wp_strip_all_tags( $new_instance['coupon'] ) : '';
-        $instance['embed_options']          = isset( $new_instance['embed_options'] ) ? wp_strip_all_tags( $new_instance['embed_options'] ) : '';
         $instance['create_user']            = isset( $new_instance['create_user'] ) ? wp_strip_all_tags( $new_instance['create_user'] ) : '';
         $instance['sb_login_redirect_url']    = isset( $new_instance['sb_login_redirect_url'] ) ? wp_strip_all_tags( $new_instance['sb_login_redirect_url'] ) : '';
 		return $instance;
@@ -144,19 +110,17 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
 	// Display the widget
 	public function widget( $args, $instance ) {
 
-		extract( $args );
+        extract( $args );
 
         // Check the widget options
-        $billing_page_id           = isset( $instance['billing_page_id'] ) ? apply_filters( 'widget_billing_page_id', $instance['billing_page_id'] ) : '';
-        $title           = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
-        $servicebot_id   = $this->servicebot_id;
+        $logged_in_only  = isset( $instance['logged_in_only'] ) ? apply_filters('widget_logged_in_only', $instance['logged_in_only']) : false;
+        $logged_out_only = isset( $instance['logged_out_only'] ) ? apply_filters('widget_logged_out_only', $instance['logged_out_only']) : false;
+        $gated = isset( $instance['gated'] ) ? apply_filters('widget_gated', $instance['gated']) : false;
+        $billing_page_id = isset( $instance['billing_page_id'] ) ? apply_filters( 'widget_billing_page_id', $instance['billing_page_id'] ) : '';
         $sb_secret       = $this->secret_key;
-        $service         = isset( $instance['service'] ) ? apply_filters( 'widget_service', $instance['service'] ) : $this->global_values['service'];
         $email           = isset( $instance['email'] ) ? apply_filters( 'widget_email', $instance['email'] ) : '';
         $customer_id     = isset( $instance['customer_id'] ) ? apply_filters( 'widget_customer_id', $instance['customer_id'] ) : '';
         $subscription_id = isset( $instance['subscription_id'] ) ? apply_filters( 'widget_subscription_id', $instance['subscription_id'] ) : '';
-        $coupon          = isset( $instance['coupon'] ) ? apply_filters( 'widget_coupon', $instance['coupon'] ) : '';
-        $embed_options   = isset( $instance['embed_options'] ) ? apply_filters( 'embed_options', $instance['embed_options'] ) : '';
         $create_user     = isset( $instance['create_user'] ) ? apply_filters( 'create_user', $instance['create_user'] ) : (!!$this->global_values['create_user']);
         $sb_login_redirect_url     = isset( $instance['sb_login_redirect_url'] ) ? apply_filters( 'sb_login_redirect_url', $instance['sb_login_redirect_url'] ) : $this->global_values['login_redirect_url'];
 
@@ -165,7 +129,7 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         $logged_in_email = $logged_in_user->user_email;
         $login_url = wp_login_url($sb_login_redirect_url);
         $admin_ajax_url = admin_url("admin-ajax.php");
-        print_r($sb_secret);
+
         if($sb_secret && $logged_in_email){
             $hash = hash_hmac(
                 'sha256',
@@ -185,28 +149,11 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         
         //Create options from WP widget inputs
         $default_options = ['behavior' => ['signup' => ['promptPassword' => $create_user ? true : false]]];
-        
-        //Add 
-        $decoded_options = json_decode($embed_options, true);
-        if($decoded_options){
-            if($decoded_options['behavior']){
-                $decoded_options['behavior']['signup']['promptPassword'] = $default_options['behavior']['signup']['promptPassword'];
-            }else{
-                $decoded_options['behavior'] = $default_options['behavior'];
-            }
-            $encoded_options = json_encode($decoded_options);
-        }else{
-            $encoded_options = json_encode($default_options);
-        }
-     
-        // Display widget title if defined
-        if ( $title ) {
-            echo $before_title . $title . $after_title;
-        }
+        $encoded_options = json_encode($default_options);
 
         // Display the widget
         $render_div = '<div class="widget-text wp_widget_plugin_box">
-                            <div id="servicebot-subscription-portal"></div>
+                            <div id="billflow-embed"></div>
                        </div>';
 
         print($render_div);
@@ -216,41 +163,45 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         } else {
             $js_version = '1.0.0';
         }
-        wp_enqueue_script( 'servicebot_billing_page_widget', 
-                            plugin_dir_url( __FILE__ ) . 'js/servicebot-subscription-portal-widget.js',
+        wp_enqueue_script( 'billflow_billing_page_widget', 
+                            plugin_dir_url( __FILE__ ) . 'js/billflow-widget.js',
                             array(),
                             $js_version,
                             true
                          );
-    
-        wp_localize_script( 'servicebot_billing_page_widget', 
-                            'php_props_sp_widget', 
-                            array(
-                                'billing_page_id' => $billing_page_id,
-                                'livemode'        => $this->livemode,
-                                'servicebot_id'   => $this->servicebot_id,
-                                'hash'            => isset($hash) ? $hash : '',
-                                'service'         => $service,
-                                'email'           => $logged_in_email ? $logged_in_email : $email,
-                                'customer_id'     => $customer_id,
-                                'subscription_id' => $subscription_id,
-                                'coupon'          => $coupon,
-                                'options'         => $encoded_options,
-                                'create_user'     => $create_user ? true : false,
-                                'is_logged_in'    => $logged_in_email ? true : false,
-                                'logged_in_email' => $logged_in_email,
-                                'login_redirect_url' => $login_url,
-                                'admin_ajax_url'  => $admin_ajax_url,
-                                'widget'          => 'servicebo-billing-page-widget',
-                                'embed_type'      => 'billing_page',
-                                'js_version'      => $js_version
-                            )
+        
+
+        $js_settings = array(
+            'logged_in_only'  => $logged_in_only,
+            'logged_out_only' => $logged_out_only,
+            'gated'           => $gated,
+            'billing_page_id' => $billing_page_id,
+            'hash'            => isset($hash) ? $hash : '',
+            'email'           => $logged_in_email ? $logged_in_email : $email,
+            'customer_id'     => $customer_id,
+            'subscription_id' => $subscription_id,
+            'options'         => $encoded_options,
+            'create_user'     => $create_user ? true : false,
+            'is_logged_in'    => $logged_in_email ? true : false,
+            'logged_in_email' => $logged_in_email,
+            'login_redirect_url' => $login_url,
+            'admin_ajax_url'  => $admin_ajax_url,
+            'widget'          => 'billflow-billing-page-widget',
+            'embed_type'      => 'billing_page',
+            'js_version'      => $js_version
+        );
+
+        // print_r($js_settings);
+
+        wp_localize_script( 'billflow_billing_page_widget', 
+                            'php_props_billflow_settings', 
+                            $js_settings
                           );
 
         // Test handle response function hook
         wp_enqueue_script( 'servicebot_handle_response_js', 
                             plugin_dir_url( __FILE__ ) . 'js/servicebot-handle-response.js',
-                            array('servicebot_billing_page_widget'),
+                            array('billflow_billing_page_widget'),
                             null,
                             true
                          );
@@ -261,7 +212,7 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
     }
 
     public function get_script_depends() {
-        return [ 'servicebot_billing_page_widget' ];
+        return [ 'billflow_billing_page_widget' ];
     }
     
 }
@@ -275,10 +226,17 @@ add_action( 'widgets_init', 'servicebot_register_billing_page_widget' );
 // Add shortcode for the widget
 function shortcode_servicebot_billing_page_widget($params = array()) {
 
+    // print_r($params);
+
     // default parameters
     extract(shortcode_atts(array(
-        'title' => 'Subscription Portal',
-        'id'    => 'servicebot_billing_page_shortcode',
+        'title' => 'Billing Page',
+        'id'    => 'billflow_shortcode',
+        'billing_page_id' => 'billing_page_id',
+        'logged_out_only' => 'logged_out_only', // takes a redirect url to send user to if they are logged in
+        'logged_in_only' => 'logged_in_only', // takes a redirect url to send user to if they are logged out, default to wp_login page
+        'gated' => 'gated', // takes a redirect url to send user to if they are logged out, default to wp_login page
+        'role' => 'role', // takes a role name
         'depth' => 2
     ), $params));
 
@@ -291,4 +249,5 @@ function shortcode_servicebot_billing_page_widget($params = array()) {
     return $content;
 }
 
-add_shortcode('servicebot_billing_page_shortcode', 'shortcode_servicebot_billing_page_widget');
+// add_shortcode('servicebot_billing_page_shortcode', 'shortcode_servicebot_billing_page_widget');
+add_shortcode('billflow', 'shortcode_servicebot_billing_page_widget');

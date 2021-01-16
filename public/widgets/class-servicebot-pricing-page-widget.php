@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Servicebot Subscription Portal Widget Plugin
+Plugin Name: Billflow Subscription Portal Widget Plugin
 Plugin URI: http://www.wpexplorer.com/servicebot/
-Description: This plugin adds a servicebot subscription portal embed widget.
+Description: This plugin adds a Billflow subscription portal embed widget.
 Version: 1.0
 Author: Servicebot
-Author URI: http://servicebot.io
+Author URI: http://billflow.io
 License: GPL2
 */
 
@@ -181,7 +181,7 @@ class Servicebot_Pricing_Page_Widget extends WP_Widget {
 
         // Display the widget
         $render_div = '<div class="widget-text wp_widget_plugin_box">
-                            <div id="servicebot-subscription-portal"></div>
+                            <div id="billflow-embed"></div>
                        </div>';
 
         print($render_div);
