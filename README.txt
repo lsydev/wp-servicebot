@@ -8,7 +8,7 @@ License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Stable tag: trunk
 
-Integrate Stripe Billing with your Wordpress site in minutes. Allow customers to view pricing, signup, and manage subscriptions.
+Integrate Stripe Billing with your Wordpress site in minutes. Allow customers to view pricing, sign up, and manage subscriptions.
 
 == Upgrade Notice ==
 IMPORTANT!! This 2.0.0 version upgrade could introduce some breaking change!
@@ -16,7 +16,8 @@ If you are using this plugin's 1.x.x version already, please test this plugin th
 Some standard tests you should do:
  * Check all you embed pages and test all flows
  * Check your webhook integrations and make sure they still work as you had before
- * Make a full backup of your site before upgarding!
+ * If you are not using our Billing Pages to create your embeds, please create them at dashboard.billflow.io first and test them in your dev/stage sites.
+ * Make a full backup of your site before upgrading!
 
 == Description ==
 = IMPORTANT Upgrade Notice =
@@ -25,14 +26,14 @@ If you are using this plugin's 1.x.x version already, please test this plugin th
 Some standard tests you should do:
  * Check all you embed pages and test all flows
  * Check your webhook integrations and make sure they still work as you had before
-= Make a full backup of your site before upgarding! =
+= Make a full backup of your site before upgrading! =
 
 = Billflow =
 Launch a subscription business faster than ever with the Stripe Billing plugin by Billflow. 
 This plugin automatically connects your Stripe account to your Wordpress site allowing you to show beautiful pricing pages, take payments for Stripe Subscriptions, and let customers manage their accounts. The plugin uses Wordpress's default user authentication to allow your customers to log-in and manage their subscriptions. 
 Features:
  * Beautiful Pricing pages that can handle any Stripe pricing model
- * Secure signup forms allowing customers to subscribe to plans
+ * Secure sign up forms allowing customers to subscribe to plans
  * Handle Free trials & freemium pricing
  * Supports Stripe coupons
  * Allow customers to manage their subscription. Cancel, upgrade, and downgrade.
