@@ -319,6 +319,33 @@ class Servicebot_Admin {
 			'servicebot_servicebot_live_mode_global_setting'
 		);
 
+		// Sb service for webhooks to match which subscription events it should listen to
+		unset($args);
+		$args = array (
+			'type'		=> 'input',
+			'subtype'	=> 'text',
+			'id'		=> 'servicebot_servicebot_service_global_setting',
+			'name'		=> 'servicebot_servicebot_service_global_setting',
+			'get_options_list' => '',
+			'value_type' => 'normal',
+			'wp_data' 	=> 'option',
+			'required' => true
+		);
+
+		add_settings_field(
+			'servicebot_servicebot_service_global_setting',
+			'The sb_service for the webhook to listen to',
+			array( $this, 'servicebot_render_settings_field' ),
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_stripe_webhooks_section',
+			$args
+		);
+
+		register_setting(
+			'servicebot_stripe_webhooks_settings',
+			'servicebot_servicebot_service_global_setting'
+		);
+
 	}
 
 	public function servicebot_display_general_account() {
