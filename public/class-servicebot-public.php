@@ -172,19 +172,21 @@ function updateUserRole($user_id, $product_sb_tier){
 	}
 }
 
-function servicebot_create_wp_user($customer, $product_sb_tier){
+function servicebot_create_wp_user($customer, $product_sb_tier = NULL){
 	$email = sanitize_email( $customer->email );
 	$userdata = array(
 		'user_login'  =>  $email,
 		'user_email' => $email,
-		'role' => "subscriber"
+		'role' => ""
 	);
 	$user_id = wp_insert_user( $userdata );
 
 	if ( ! is_wp_error( $user_id ) ) {
 
 		$new_user = get_user_by('id', $user_id);
-		updateUserRole($user_id, $product_sb_tier);
+		if($product_sb_tier){
+			updateUserRole($user_id, $product_sb_tier);
+		}
 
 		wp_new_user_notification( $user_id, null, 'both');
 		wp_send_json( array(    
@@ -199,13 +201,19 @@ function servicebot_create_wp_user($customer, $product_sb_tier){
 
 		$user = get_user_by('email', $email);
 		if($user){
-			updateUserRole($user->get('id'), $product_sb_tier);
+			if($product_sb_tier){
+				updateUserRole($user->get('id'), $product_sb_tier);
+				wp_send_json( array(  
+					'info' => 'User already exists, updated user role if changed',
+					'user' => get_user_by('email', $email)
+				), 200 );
+			}else{
+				wp_send_json( array(  
+					'info' => 'User already exists, no action',
+					'user' => get_user_by('email', $email)
+				), 200 );
+			}
 		}
-
-		wp_send_json( array(  
-			'info' => 'User already exists, updated user role if changed',
-			'user' => get_user_by('email', $email)
-		), 200 );
 	}
 	return NULL;
 }
