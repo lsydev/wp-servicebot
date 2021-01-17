@@ -23,7 +23,6 @@
 	<form method="POST" action="options.php">  
 		<section>
 			<p>You can map your user roles to your sb_tier setup here.</p>
-			<p>Not sure if you need this? <a href="https://docs.billflow.io/no-code-integrations/no-code-app-builders/wordpress#step-2-optionally-configure-stripe-webhooks" target="_blank">learn more about this feature here.</a></p>
 			<hr/>
 			<h3>Step 1</h3>
 			<p>Enter the sb_tier name for the roles you'd like to add automatically when a subscription is created / updated.</p>
