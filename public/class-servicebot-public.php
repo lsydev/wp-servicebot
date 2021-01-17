@@ -187,7 +187,7 @@ function servicebot_create_wp_user($customer, $product_sb_tier){
 		wp_send_json( array(    
 			'user_id' => $user_id,
 			'email' => $email,
-			'wp_user' => $new_user,
+			'wp_user' => get_user_by('id', $user_id),
 			'password' => '*****',
 			'message' => 'User created successfully.'
 		), 200 );
