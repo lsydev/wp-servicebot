@@ -15,8 +15,8 @@
  * @wordpress-plugin
  * Plugin Name:       Billflow
  * Plugin URI:        http://www.wpexplorer.com/servicebot/
- * Description:       Breaking Change!! If you are on version 1.x.x, please perform a full test on this version 2.0.0 update in your test site before going live!! We rebranded Servicebot to become Billflow starting in 2021.
- * Version:           2.0.0
+ * Description:       Provides NO-CODE integration between WordPress and Billflow, an UI layer on top of Stripe Billing.
+ * Version:           2.0.1
  * Author:            Billflow
  * Author URI:        https://billflow.io
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SERVICEBOT_VERSION', '2.0.0' );
+define( 'SERVICEBOT_VERSION', '2.0.1' );
 
 /**
  * The code that runs during plugin activation.
