@@ -58,7 +58,6 @@ class Servicebot_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
 	}
 
 	/**
@@ -120,7 +119,7 @@ function servicebot_ajax_create_user() {
       'user_login'  =>  $name,
       'user_email' => $email,
       'user_pass'   =>  $password,
-      'role' => 'subscriber'
+      'role' => "subscriber"
 	);
 	
 	$user_id = wp_insert_user( $userdata );
@@ -164,8 +163,12 @@ function updateUserRole($user_id, $product_sb_tier){
 	}
 	if($tier_to_role_map && $user){
 		if($tier_to_role_map[$product_sb_tier]){
-			$user->set_role($tier_to_role_map[$product_sb_tier]);
+			$user->set_role(strtolower($tier_to_role_map[$product_sb_tier]));
+		}else{
+			$user->set_role("subscriber");
 		}
+	}else if($user){
+		$user->set_role("subscriber");
 	}
 }
 
@@ -174,7 +177,7 @@ function servicebot_create_wp_user($customer, $product_sb_tier){
 	$userdata = array(
 		'user_login'  =>  $email,
 		'user_email' => $email,
-		'role' => 'subscriber'
+		'role' => "subscriber"
 	);
 	$user_id = wp_insert_user( $userdata );
 
@@ -205,6 +208,61 @@ function servicebot_create_wp_user($customer, $product_sb_tier){
 		), 200 );
 	}
 	return NULL;
+}
+
+function getStripeProduct($event, $product_id){
+	try{
+		$product = \Stripe\Product::retrieve($product_id);
+		return $product;
+	}catch(Exception $e){
+		wp_send_json_error( array(
+			"event"				=> $event,
+			"error"				=> "We are unable to retrieve product with id $product_id to validate the sb_service setup is with this site from the stripe account.",
+			"info" 				=> "Please make sure your Billflow WordPress plugin webhooks settings has the correct Stripe API keys and sb_service setting.",
+			"action" 			=> "retrieve product via stripe API for $product_id",
+			"payload"	 		=> array(
+									"product_id" => $product_id,
+								),
+			"stripe_response"	 => array(
+									"product_object" => $product,
+								)
+		), 500 );
+	}
+}
+
+function getStripeCustomer($event, $customer_id){
+	$NUM_OF_ATTEMPTS = 5;
+	$attempts = 0;
+
+	do {
+		try{
+			$customer = \Stripe\Customer::retrieve($customer_id);
+			if(!$customer['email']){
+				return NULL;
+			}
+			return $customer;
+		} catch (Exception $e) {
+			$attempts++;
+			if($attempts == $NUM_OF_ATTEMPTS-1){
+				wp_send_json_error( array(
+					"event"				=> $event,
+					"error"				=> "We are unable to retrieve customer object with id $customer_id from the stripe account 
+											after $attempts retries to get the customer's email in order to handle this event.",
+					"action" 			=> "retrieve customer object via stripe API for $customer_id",
+					"attempt_counts" 	=> $attempts,
+					"payload"			=>array(
+											"customer_id" => $customer_id
+										),
+					"stripe_response" 	=> array(
+											"customer_object" => $customer,
+										)
+				), 500 );
+			}
+			sleep(1);
+			continue;
+		}
+		break;
+	} while($attempts < $NUM_OF_ATTEMPTS);
 }
 
 function servicebot_webhook_listener() {
@@ -251,6 +309,49 @@ function servicebot_webhook_listener() {
 
 		// Handle the event
 		switch ($event->type) {
+			case 'customer.subscription.updated':
+				$subscription = $event->data->object;
+				$customer_id = $subscription->customer;
+				$product_id = $subscription['plan']['product'];
+				$sb_service = get_option('servicebot_servicebot_service_global_setting');
+				$product = getStripeProduct($event->type, $product_id);
+				if($product){
+					$product_sb_service = $product['metadata']['sb_service'];
+					$product_sb_tier = $product['metadata']['sb_tier'];
+					
+					if($sb_service == $product_sb_service){
+
+						$customer = getStripeCustomer($event->type, $customer_id);
+						if(!$customer['email']){
+							// customer does not exist in stripe, do nothing
+						}else{
+							$user = get_user_by('email', $customer['email']);
+							// get the subscription status
+							$subscription_status = $subscription['status'];
+							// if status is canceled, unpaid, past_due, incomplete or incomplete_expired
+							if(in_array($subscription_status, ['unpaid', 'past_due', 'incomplete', 'incomplete_expired'])){
+								//set the user's role to none
+								$user->set_role("");
+								wp_send_json( array(    
+									'event'					=> $event->type,
+									'subscription_status' 	=> $subscription_status,
+									'message' 				=> "Removed all WP roles from user because their subscription status is one of these 'unpaid' || 'past_due' || 'incomplete' || 'incomplete_expired'",
+									'updated_user' 			=> get_user_by('email', $customer['email'])
+								), 200 );
+							}else{
+								//call update user status to check if it needs updating according to the $product_sb_tier
+								updateUserRole($user->get('id'), $product_sb_tier);
+								// send response to Stripe
+								wp_send_json( array(    
+									'event'			=> $event->type,
+									'message' 		=> "Updated user WP roles based on the sb_tier they are subscribed to.",
+									'updated_user' 	=> get_user_by('email', $customer['email'])
+								), 200 );
+							}
+						}
+					}
+				}
+				break;	
 			case 'customer.subscription.deleted':
 				$subscription = $event->data->object;
 				$customer_id = $subscription->customer;
