@@ -146,8 +146,30 @@ function servicebot_ajax_create_user() {
 add_action( 'wp_ajax_create_user', 'servicebot_ajax_create_user' );
 add_action( 'wp_ajax_nopriv_create_user', 'servicebot_ajax_create_user' );
 
+function updateUserRole($user_id, $product_sb_tier){
+	// Set the new user's role
+	/**
+	 * [$tier_to_role_map an associative array sb_tier => role]
+	 *
+	 * @var [associative array]
+	 */
+	$user = get_user_by('id', $user_id);
+	$tier_to_role_map;
+	$all_roles = wp_roles()->get_names();
+	foreach($all_roles as $role_name){
+		$tier = get_option("billflow_role_to_tier_$role_name");
+		if($tier){
+			$tier_to_role_map[$tier] = $role_name;
+		}
+	}
+	if($tier_to_role_map && $user){
+		if($tier_to_role_map[$product_sb_tier]){
+			$user->set_role($tier_to_role_map[$product_sb_tier]);
+		}
+	}
+}
 
-function servicebot_create_wp_user($customer){
+function servicebot_create_wp_user($customer, $product_sb_tier){
 	$email = sanitize_email( $customer->email );
 	$userdata = array(
 		'user_login'  =>  $email,
@@ -157,21 +179,32 @@ function servicebot_create_wp_user($customer){
 	$user_id = wp_insert_user( $userdata );
 
 	if ( ! is_wp_error( $user_id ) ) {
+
+		$new_user = get_user_by('id', $user_id);
+		updateUserRole($user_id, $product_sb_tier);
+
 		wp_new_user_notification( $user_id, null, 'both');
 		wp_send_json( array(    
 			'user_id' => $user_id,
 			'email' => $email,
+			'wp_user' => $new_user,
 			'password' => '*****',
 			'message' => 'User created successfully.'
 		), 200 );
+		return $new_user;
 	}else{
+
+		$user = get_user_by('email', $email);
+		if($user){
+			updateUserRole($user->get('id'), $product_sb_tier);
+		}
+
 		wp_send_json( array(  
-			'info' => 'Unable to create user. The user with this email probably already exists in your Wordpress site.',
-			'email' => $email,
-			'name' => $name,
-			'password' => '*****',
+			'info' => 'User already exists, updated user role if changed',
+			'user' => get_user_by('email', $email)
 		), 200 );
 	}
+	return NULL;
 }
 
 function servicebot_webhook_listener() {
@@ -218,6 +251,77 @@ function servicebot_webhook_listener() {
 
 		// Handle the event
 		switch ($event->type) {
+			case 'customer.subscription.deleted':
+				$subscription = $event->data->object;
+				$customer_id = $subscription->customer;
+				$product_id = $subscription['plan']['product'];
+				//check the subscription's product and make sure it's the same as 
+				//the sb_service configured in plugin settings
+				$sb_service = get_option('servicebot_servicebot_service_global_setting');
+				//get the product using subscription obj's attached product id
+				try{
+					$product = \Stripe\Product::retrieve($product_id);
+					$product_sb_service = $product['metadata']['sb_service'];
+					$product_sb_tier = $product['metadata']['sb_tier'];
+					// $subscription_sb_service = $subscription['metadata']['sb_service'];
+					if($sb_service == $product_sb_service){
+						$NUM_OF_ATTEMPTS = 5;
+						$attempts = 0;
+
+						do {
+							try{
+								$customer = \Stripe\Customer::retrieve($customer_id);
+								//after getting a customer object, pass it to create wp user
+								if(!$customer['email']){
+									throw(new Exception('No customer retrieved'));
+								}
+
+								$wp_user = get_user_by('email', $customer['email']);
+								$wp_user->set_role("");
+
+								wp_send_json( array(    
+									'message' => 'User role updated successfully.',
+									'updated_user' => $wp_user
+								), 200 );
+
+								break;
+							} catch (Exception $e) {
+								$attempts++;
+								if(attempts == NUM_OF_ATTEMPTS-1){
+									//log something to alert site owner of the failure
+									wp_send_json_error( array(
+										"error"=> "We are unable to retrieve customer object with id $customer_id from the stripe account after $attempts retries to get the customer's email to create a wordpress user. Please create this wordpress user manually.",
+										"action" => "retrieve customer object via stripe API for $customer_id",
+										"attempt_counts" => $attempts,
+										"payload"=>array(
+											"customer_id" => $customer_id
+										),
+										"stripe_response" => array(
+											"customer_object" => $customer,
+										)
+									), 500 );
+								}
+								sleep(1);
+								continue;
+							}
+							break;
+						} while($attempts < $NUM_OF_ATTEMPTS);
+					}
+				}catch(Exception $e){
+					wp_send_json_error( array(
+						"event"=> "customer.subscription.deleted",
+						"error"=> "We are unable to retrieve product with id $product_id to validate the sb_service setup is with this site from the stripe account, please create this user $customer_id manually.",
+						"info" => "Please make sure your Billflow WordPress plugin has the correct Stripe API keys set.",
+						"action" => "retrieve product via stripe API for $product_id",
+						"payload" => array(
+							"product_id" => $product_id,
+						),
+						"stripe_response" => array(
+							"product_object" => $product,
+						)
+					), 500 );
+				}
+				break;	
 			case 'customer.subscription.created':
 				$subscription = $event->data->object;
 				$customer_id = $subscription->customer;
@@ -229,6 +333,7 @@ function servicebot_webhook_listener() {
 				try{
 					$product = \Stripe\Product::retrieve($product_id);
 					$product_sb_service = $product['metadata']['sb_service'];
+					$product_sb_tier = $product['metadata']['sb_tier'];
 					// $subscription_sb_service = $subscription['metadata']['sb_service'];
 					if($sb_service == $product_sb_service){
 						$NUM_OF_ATTEMPTS = 5;
@@ -242,7 +347,7 @@ function servicebot_webhook_listener() {
 								if(!$customer['email']){
 									throw(new Exception('No customer retrieved'));
 								}
-								servicebot_create_wp_user($customer);
+								servicebot_create_wp_user($customer, $product_sb_tier);
 								break;
 							} catch (Exception $e) {
 								$attempts++;
