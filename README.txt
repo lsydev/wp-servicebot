@@ -42,6 +42,37 @@ Features:
  * Subscription management portal can be used with Stripe Checkout
  * Automatically create your Stripe customers as WordPress users with Stripe Webhooks
 
+== How To Use Shortcodes ==
+ * Install this plugin
+ * Create a billing page at dashboard.billflow.io
+ * Insert a shortcode and embed one any of the billflow embeds, pricing, checkout, customer portal etc.
+
+== Shortcodes Examples ==
+
+= Embed a page. =
+`[billflow billing_page_id="1234567890"]`
+
+= Embed a page and gate it behind a login. =
+`[billflow billing_page_id="1234567890" logged_in_only="true"]`
+
+= Embed a page that is only for non-users and send user to another page if logged in. =
+`[billflow billing_page_id="1234567890" logged_out_only="/my-account"]`
+
+= Embed a page that is only for users with certain role =
+`[billflow billing_page_id="1234567890" logged_in_only="true" gated="basic_tier"]`
+
+= Or embed a page for users with any of the listed roles =
+`[billflow billing_page_id="1234567890" logged_in_only="true" gated="basic_tier, premium_tier"]`
+
+= Gate any page to a specific role =
+Send basic tier users to an upgrade checkout page
+
+`[billflow gated="basic_tier" upgrade_url="/upgrade"]`
+
+Or send any other user / non-users to a sign up pricing page
+
+`[billflow gated="basic_tier, premium_tier" upgrade_url="/pricing"]`
+
 == Installation ==
 STEP-BY-STEP INSTRUCTIONS
 Log in to your site's dashboard (e.g. www.yourdomain.com/wp-admin).

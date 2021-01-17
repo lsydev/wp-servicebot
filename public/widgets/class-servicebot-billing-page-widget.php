@@ -111,11 +111,13 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
 	public function widget( $args, $instance ) {
 
         extract( $args );
-
+        $current_user = wp_get_current_user();
         // Check the widget options
+        $user_roles       = $current_user->roles;
         $logged_in_only  = isset( $instance['logged_in_only'] ) ? apply_filters('widget_logged_in_only', $instance['logged_in_only']) : false;
         $logged_out_only = isset( $instance['logged_out_only'] ) ? apply_filters('widget_logged_out_only', $instance['logged_out_only']) : false;
         $gated = isset( $instance['gated'] ) ? apply_filters('widget_gated', $instance['gated']) : false;
+        $upgrade_url = isset( $instance['upgrade_url'] ) ? apply_filters('widget_upgrade_url', $instance['upgrade_url']) : false;
         $billing_page_id = isset( $instance['billing_page_id'] ) ? apply_filters( 'widget_billing_page_id', $instance['billing_page_id'] ) : '';
         $sb_secret       = $this->secret_key;
         $email           = isset( $instance['email'] ) ? apply_filters( 'widget_email', $instance['email'] ) : '';
@@ -171,10 +173,21 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
                          );
         
 
+        $gated_array = explode(',', $gated);
+        $clean_gated = array_map(function($role){
+            return trim($role);
+        }, $gated_array);
+        $filtered_gated = array_filter($clean_gated, function($role){
+            return $role != "";
+        });
+
         $js_settings = array(
+            'can_edit_site'   => current_user_can('edit_pages') || current_user_can('edit_posts'),
+            'user_roles'       => $user_roles,
             'logged_in_only'  => $logged_in_only,
             'logged_out_only' => $logged_out_only,
-            'gated'           => $gated,
+            'gated'           => $filtered_gated,
+            'upgrade_url'     => $upgrade_url,
             'billing_page_id' => $billing_page_id,
             'hash'            => isset($hash) ? $hash : '',
             'email'           => $logged_in_email ? $logged_in_email : $email,
