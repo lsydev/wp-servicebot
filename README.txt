@@ -42,10 +42,11 @@ Features:
  * Subscription management portal can be used with Stripe Checkout
  * Automatically create your Stripe customers as WordPress users with Stripe Webhooks
 
-== How To Use Shortcodes ==
+== How To Use ==
  * Install this plugin
- * Create a billing page at dashboard.billflow.io
+ * Create a billing page at [dashboard.billflow.io](https://dashboard.billflow.io)
  * Insert a shortcode and embed one any of the billflow embeds, pricing, checkout, customer portal etc.
+ * Setup Stripe webhooks to sync your Stripe customer and subscription status to your WordPress user and user roles.
 
 == Shortcodes Examples ==
 

@@ -59,10 +59,18 @@ class Servicebot_Admin {
 
 	public function addPluginAdminMenu() {
 		//add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
-		add_menu_page(  $this->plugin_name, 'Billflow', 'administrator', $this->plugin_name, array( $this, 'displayPluginAdminSettings' ), plugin_dir_url( __DIR__ ) . 'img/billflow-white-gradient.png', 26 );
+		add_menu_page(  $this->plugin_name, 
+			'Billflow', 
+			'administrator', 
+			$this->plugin_name, 
+			array( $this, 'displayPluginAdminSettings' ), 
+			plugin_dir_url( __DIR__ ) . 'img/billflow-white-gradient.png', 26 );
 		
 		//add_submenu_page( '$parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
 		add_submenu_page( $this->plugin_name, 'Billflow Stripe Webhooks', 'Stripe Webhooks', 'administrator', $this->plugin_name.'-stripe-webhooks', array( $this, 'displayPluginAdminStripeWebhooks' ));
+
+		// add roles settings page
+		add_submenu_page( $this->plugin_name, 'Billflow Role & Tiers', 'Setup Roles', 'administrator', $this->plugin_name.'-setup-roles', array( $this, 'displayPluginAdminSetupRoles' ));
 	}
 
 	public function displayPluginAdminSettings() {
@@ -83,6 +91,16 @@ class Servicebot_Admin {
 			do_action( 'admin_notices', $_GET['error_message'] );
 		}
 		require_once 'partials/'.$this->plugin_name.'-admin-stripe-webhooks.php';
+	}
+
+	public function displayPluginAdminSetupRoles() {
+		// set this var to be used in the settings-display view
+		$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general';
+		if(isset($_GET['error_message'])){
+			add_action('admin_notices', array($this,'servicebotSettingsMessages'));
+			do_action( 'admin_notices', $_GET['error_message'] );
+		}
+		require_once 'partials/'.$this->plugin_name.'-admin-setup-roles.php';
 	}
 
 	public function ServicebotSettingsMessages($error_message){
@@ -128,6 +146,17 @@ class Servicebot_Admin {
 			array( $this, 'servicebot_display_general_account' ),    
 			// Page on which to add this section of options
 			'servicebot_general_settings'                   
+		);
+
+		add_settings_section(
+			// ID used to identify this section and with which to register options
+			'billflow_roles_settings_section', 
+			// Title to be displayed on the administration page
+			'',  
+			// Callback used to render the description of the section
+			array( $this, 'servicebot_display_general_account' ),    
+			// Page on which to add this section of options
+			'billflow_roles_settings'                   
 		);
 
 		// Billflow secret key
@@ -346,6 +375,37 @@ class Servicebot_Admin {
 			'servicebot_servicebot_service_global_setting'
 		);
 
+		// Tier to roles map for webhook to update user roles
+
+		$all_roles = wp_roles()->get_names();
+		foreach($all_roles as $role_name){
+			unset($args);
+			$args = array (
+				'type'		=> 'input',
+				'subtype'	=> 'text',
+				'id'		=> "billflow_role_to_tier_$role_name",
+				'name'		=> "billflow_role_to_tier_$role_name",
+				'get_options_list' => '',
+				'value_type' => 'normal',
+				'wp_data' 	=> 'option',
+				'required' => false
+			);
+
+			add_settings_field(
+				"billflow_role_to_tier_$role_name",
+				$role_name,
+				array( $this, 'servicebot_render_settings_field' ),
+				'billflow_roles_settings',
+				'billflow_roles_settings_section',
+				$args
+			);
+
+			register_setting(
+				'billflow_roles_settings',
+				"billflow_role_to_tier_$role_name",
+			);
+		}
+		
 	}
 
 	public function servicebot_display_general_account() {
