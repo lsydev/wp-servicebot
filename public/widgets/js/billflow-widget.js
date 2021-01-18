@@ -128,7 +128,10 @@
                     }
 
                     if(login_redirect_url){
+                        console.log("redirect url set", login_redirect_url);
                         window.location = login_redirect_url;
+                    }else if(data.refresh){
+                        window.location.reload();
                     }
                 };
 

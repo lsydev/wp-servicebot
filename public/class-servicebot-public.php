@@ -126,12 +126,21 @@ function servicebot_ajax_create_user() {
 	
 	//On success
 	if ( ! is_wp_error( $user_id ) ) {
+
+		// Send email to the new user
 		wp_new_user_notification( $user_id, null, 'both');
+
+		// Login the new user
+		wp_clear_auth_cookie();
+        wp_set_current_user ( $user_id ); // Set the current user detail
+        wp_set_auth_cookie  ( $user_id ); // Set auth details in cookie
+
 		wp_send_json( array(    'user_id' => $user_id,
 								'email' => $email,
 								'name' => $name,
 								'password' => '*****',
-								'message' => 'User created successfully.'
+								'message' => 'User created successfully.',
+								'refresh' => true
 					), 200 );
 	}else{
 		wp_send_json_error( array(  'email' => $email,
