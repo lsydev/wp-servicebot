@@ -124,12 +124,10 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         $customer_id     = isset( $instance['customer_id'] ) ? apply_filters( 'widget_customer_id', $instance['customer_id'] ) : '';
         $subscription_id = isset( $instance['subscription_id'] ) ? apply_filters( 'widget_subscription_id', $instance['subscription_id'] ) : '';
         $create_user     = isset( $instance['create_user'] ) ? apply_filters( 'create_user', $instance['create_user'] ) : (!!$this->global_values['create_user']);
-        $sb_login_redirect_url     = isset( $instance['sb_login_redirect_url'] ) ? apply_filters( 'sb_login_redirect_url', $instance['sb_login_redirect_url'] ) : $this->global_values['login_redirect_url'];
 
         // Get Wordpress data
         $logged_in_user = wp_get_current_user();
         $logged_in_email = $logged_in_user->user_email;
-        $login_url = wp_login_url($sb_login_redirect_url);
         $admin_ajax_url = admin_url("admin-ajax.php");
 
         if($sb_secret && $logged_in_email){
@@ -197,7 +195,6 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
             'create_user'     => $create_user ? true : false,
             'is_logged_in'    => $logged_in_email ? true : false,
             'logged_in_email' => $logged_in_email,
-            'login_redirect_url' => $login_url,
             'admin_ajax_url'  => $admin_ajax_url,
             'widget'          => 'billflow-billing-page-widget',
             'embed_type'      => 'billing_page',

@@ -111,10 +111,11 @@
                     action: "create_user", 
                     email: response.customer.email, 
                     name: username,
+                    subscription_id: response && response.id,
                     password: password
                 };
 
-                const createSubscriptionCallback = function(data) {
+                jQuery.post(ajax_url, payload, function(data) {
                     console.debug("create_subscription create_user callback", data)
 
                     /**
@@ -123,16 +124,26 @@
                     if(servicebot_wp_handle_response_create_subscription){
                         servicebot_wp_handle_response_create_subscription({event, response, extras});
                     }
+                    /**
+                     * new handle response hook for 2021
+                     */
                     if(billflow_wp_handle_response_create_subscription){
                         billflow_wp_handle_response_create_subscription({event, response, extras});
                     }
 
                     if(login_redirect_url){
+                        console.debug("redirect url set", login_redirect_url);
                         window.location = login_redirect_url;
+                    }else if(data.refresh){
+                        window.location.reload();
                     }
-                };
 
-                jQuery.post(ajax_url, payload, createSubscriptionCallback);
+                }).done(function(){
+                    // console.log("Billflow WP account creation successful")
+                }).fail(function(){
+                    // alert('checkout create usr failed');
+                    console.error("Billflow WP account creation encountered an error");
+                })
             }
 
         }

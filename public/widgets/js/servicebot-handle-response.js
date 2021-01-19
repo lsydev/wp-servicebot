@@ -1,6 +1,11 @@
 console.log('loaded servicebot-handle-response.js')
+
 var servicebot_wp_handle_response_create_subscription;
 var servicebot_wp_handle_response;
+
+var billflow_wp_handle_response_create_subscription;
+var billflow_wp_handle_response;
+
 (function( $ ) {
 	'use strict';
 
