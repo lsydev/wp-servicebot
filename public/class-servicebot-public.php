@@ -8,6 +8,16 @@ use Stripe\Event;
 use Stripe\Webhook;
 
 /**
+	 * User meta data created by billflow
+	 * billflow_created
+	 * billflow_checkout_created
+	 * billflow_stripe_webhook_created
+	 * billflow_stripe_subscription_id
+	 * 
+	 * User created default role to whatever the system default is.
+	 */
+
+/**
  * The public-facing functionality of the plugin.
  *
  * @link       servicebot.io
@@ -113,19 +123,23 @@ function servicebot_ajax_create_user() {
 
     $email = sanitize_email( $_POST['email'] );
     $name = sanitize_user( $_POST['name'] );
-    $password = $_POST['password'];
+	$password = $_POST['password'];
+	$subscription_id = $_POST['subscription_id'];
 	
     $userdata = array(
       'user_login'  =>  $name,
       'user_email' => $email,
       'user_pass'   =>  $password,
-      'role' => "subscriber"
 	);
 	
 	$user_id = wp_insert_user( $userdata );
-	
+
 	//On success
 	if ( ! is_wp_error( $user_id ) ) {
+
+		// add user meta to note that this is created by Stripe webhook
+		update_user_meta($user_id, "billflow_checkout_created", TRUE);
+		update_user_meta($user_id, "billflow_created", TRUE);
 
 		// Send email to the new user
 		wp_new_user_notification( $user_id, null, 'both');
@@ -143,11 +157,41 @@ function servicebot_ajax_create_user() {
 								'refresh' => true
 					), 200 );
 	}else{
-		wp_send_json_error( array(  'email' => $email,
-									'name' => $name,
-									'password' => '*****',
-									'error' => 'Unable to create user.',
-							), 500 );
+
+		// if user already exists
+		$existing_user = get_user_by('email', $email);
+		$user_id = $existing_user->get('id');
+		// if the user hasn't been updated with a password
+		if(get_user_meta( $user_id, "billflow_stripe_webhook_created", TRUE )){
+			// and if the user has the matching subscription
+			if(get_user_meta( $user_id, "billflow_stripe_subscription_id", TRUE) === $subscription_id){
+				// remove the meta that indicates need password update
+				delete_user_meta($user->get('id'), "billflow_stripe_webhook_created");
+				// update the password
+				wp_set_password($password, $user_id);
+				// Login the new user
+				wp_clear_auth_cookie();
+				wp_set_current_user ( $user_id ); // Set the current user detail
+				wp_set_auth_cookie  ( $user_id ); // Set auth details in cookie
+
+				wp_send_json( array(  'email' => $email,
+						'user_already_exists' => true,
+						'password_updated' => true,
+				), 200 );
+			}else{
+				// the case if some one else put an existing email in.
+				wp_send_json_error( array(  'email' => $email,
+						'user_already_exists' => true,
+						'checkout_sid' => $subscription_id,
+						// 'existing_sid' => get_user_meta( $user_id, "billflow_stripe_subscription_id", TRUE),
+						'error' => 'User is created by webhook, but subscription does not match.',
+				), 591 );
+			}
+		}else{
+			wp_send_json_error( array(  'email' => $email,
+				'error' => 'Unable to create user.',
+			), 592 );
+		}
 	}
 
 }
@@ -181,23 +225,43 @@ function updateUserRole($user_id, $product_sb_tier){
 	}
 }
 
-function servicebot_create_wp_user($customer, $product_sb_tier = NULL){
+/**
+ * webhook create user handler, called by the Stripe webhook handler
+ *
+ * @param   [object]$customer         Stripe customer object
+ * @param   [string]$product_sb_tier  sb_tier meta data of the subscription
+ * @param   [string]$subscription_id  Stripe subscription id
+ *
+ * @return  [WP_User]                 returns the WP user object if created
+ */
+function servicebot_create_wp_user($customer, $product_sb_tier = NULL, $subscription_id = NULL){
 	$email = sanitize_email( $customer->email );
+
+	// create wp user with the email and role should be assigned to whatever system settings's default is
 	$userdata = array(
-		'user_login'  =>  $email,
-		'user_email' => $email,
-		'role' => ""
+		'user_login'  => $email,
+		'user_email' => $email
 	);
 	$user_id = wp_insert_user( $userdata );
 
 	if ( ! is_wp_error( $user_id ) ) {
 
+		// add user meta to note that this is created by Stripe webhook
+		update_user_meta($user_id, "billflow_stripe_webhook_created", TRUE);
+		update_user_meta($user_id, "billflow_created", TRUE);
+		if(isset($subscription_id)){
+			update_user_meta($user_id, "billflow_stripe_subscription_id", $subscription_id);
+		}
+
+		// update user role according to the billfow plugin roles settings
 		$new_user = get_user_by('id', $user_id);
 		if($product_sb_tier){
 			updateUserRole($user_id, $product_sb_tier);
 		}
 
+		// send email notification to new user
 		wp_new_user_notification( $user_id, null, 'both');
+
 		wp_send_json( array(    
 			'user_id' => $user_id,
 			'email' => $email,
@@ -206,11 +270,15 @@ function servicebot_create_wp_user($customer, $product_sb_tier = NULL){
 			'message' => 'User created successfully.'
 		), 200 );
 		return $new_user;
+
 	}else{
 
+		// if user already exists
 		$user = get_user_by('email', $email);
 		if($user){
+			// and the subscription has product metadata sb_tier
 			if($product_sb_tier){
+				// then try updating the user role according to the billflow roles settings
 				updateUserRole($user->get('id'), $product_sb_tier);
 				wp_send_json( array(  
 					'info' => 'User already exists, updated user role if changed',
@@ -218,7 +286,8 @@ function servicebot_create_wp_user($customer, $product_sb_tier = NULL){
 				), 200 );
 			}else{
 				wp_send_json( array(  
-					'info' => 'User already exists, no action',
+					'ok', true,
+					'info' => 'User already exists, no action performed.',
 					'user' => get_user_by('email', $email)
 				), 200 );
 			}
@@ -465,7 +534,7 @@ function servicebot_webhook_listener() {
 								if(!$customer['email']){
 									throw(new Exception('No customer retrieved'));
 								}
-								servicebot_create_wp_user($customer, $product_sb_tier);
+								servicebot_create_wp_user($customer, $product_sb_tier, $subscription['id']);
 								break;
 							} catch (Exception $e) {
 								$attempts++;
@@ -539,3 +608,29 @@ function servicebot_webhook_listener() {
 }
 
 add_action( 'wp_loaded', 'servicebot_webhook_listener' );
+
+/**
+	 * User meta data created by billflow
+	 * billflow_created
+	 * billflow_checkout_created
+	 * billflow_stripe_webhook_created
+	 * billflow_stripe_subscription_id
+	 * 
+	 * User created default role to whatever the system default is.
+	 */
+	function debug(){
+		$user = get_user_by('email', 'lungwp7@billflow.io');
+		if(isset($user) && $user->ID){
+			$billflow_created = get_user_meta( $user->ID, "billflow_created", TRUE);
+			$billflow_checkout_created = get_user_meta( $user->ID, "billflow_checkout_created", TRUE);
+			$billflow_webhook_created = get_user_meta( $user->ID, "billflow_stripe_webhook_created", TRUE);
+			
+			echo "<pre>";
+				print_r($user);
+				print_r(array($billflow_created, $billflow_checkout_created, $billflow_webhook_created));
+			echo "</pre>";
+		}
+	}
+	add_action( 'init', 'debug');
+	
+	
