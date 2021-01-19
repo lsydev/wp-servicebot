@@ -206,6 +206,11 @@ function updateUserRole($user_id, $product_sb_tier){
 	 * @var [associative array]
 	 */
 	$user = get_user_by('id', $user_id);
+
+	if(in_array('administrator', $user->roles)){
+		return;
+	}
+
 	$tier_to_role_map;
 	$all_roles = wp_roles()->get_names();
 	foreach($all_roles as $role_name){
@@ -218,10 +223,18 @@ function updateUserRole($user_id, $product_sb_tier){
 		if($tier_to_role_map[$product_sb_tier]){
 			$user->set_role(strtolower($tier_to_role_map[$product_sb_tier]));
 		}else{
-			$user->set_role("subscriber");
+			$user->set_role(get_option('default_role'));
 		}
 	}else if($user){
-		$user->set_role("subscriber");
+		$user->set_role(get_option('default_role'));
+	}
+}
+
+function removeUserRole($wp_user){
+	// remove user roles for cancel and out of status acccounts
+	// except for admin
+	if(!in_array('administrator', $wp_user->roles)){
+		$wp_user->set_role("");
 	}
 }
 
@@ -417,7 +430,7 @@ function servicebot_webhook_listener() {
 							// if status is canceled, unpaid, past_due, incomplete or incomplete_expired
 							if(in_array($subscription_status, ['unpaid', 'past_due', 'incomplete', 'incomplete_expired'])){
 								//set the user's role to none
-								$user->set_role("");
+								removeUserRole($user);
 								wp_send_json( array(    
 									'event'					=> $event->type,
 									'subscription_status' 	=> $subscription_status,
@@ -464,7 +477,7 @@ function servicebot_webhook_listener() {
 								}
 
 								$wp_user = get_user_by('email', $customer['email']);
-								$wp_user->set_role("");
+								removeUserRole($wp_user);
 
 								wp_send_json( array(    
 									'message' => 'User role updated successfully.',
