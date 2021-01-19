@@ -608,29 +608,3 @@ function servicebot_webhook_listener() {
 }
 
 add_action( 'wp_loaded', 'servicebot_webhook_listener' );
-
-/**
-	 * User meta data created by billflow
-	 * billflow_created
-	 * billflow_checkout_created
-	 * billflow_stripe_webhook_created
-	 * billflow_stripe_subscription_id
-	 * 
-	 * User created default role to whatever the system default is.
-	 */
-	function debug(){
-		$user = get_user_by('email', 'lungwp7@billflow.io');
-		if(isset($user) && $user->ID){
-			$billflow_created = get_user_meta( $user->ID, "billflow_created", TRUE);
-			$billflow_checkout_created = get_user_meta( $user->ID, "billflow_checkout_created", TRUE);
-			$billflow_webhook_created = get_user_meta( $user->ID, "billflow_stripe_webhook_created", TRUE);
-			
-			echo "<pre>";
-				print_r($user);
-				print_r(array($billflow_created, $billflow_checkout_created, $billflow_webhook_created));
-			echo "</pre>";
-		}
-	}
-	add_action( 'init', 'debug');
-	
-	
