@@ -33,7 +33,7 @@
     const { subscription_id, create_user, is_logged_in, logged_in_email } = php_props_billflow_settings
     const { login_redirect_url, admin_ajax_url, embed_type, js_version } = php_props_billflow_settings;
     const { logged_out_only, logged_in_only, gated, user_roles, upgrade_url, can_edit_site } = php_props_billflow_settings;
-
+    const { server_side_config } = php_props_billflow_settings
     /**
      * Gating logics
      */
@@ -97,7 +97,55 @@
         return false
     }
 
-    function handleResponse ({event, response, extras}) {
+    function createUserPromise(payload){
+        return new Promise((resolve, reject) => {
+            // We call resolve(...) when what we were doing asynchronously was successful, and reject(...) when it failed.
+            // In this example, we use setTimeout(...) to simulate async code.
+            // In reality, you will probably be using something like XHR or an HTML5 API.
+            const ajax_url = admin_ajax_url;
+            jQuery.post(ajax_url, payload, function(data) {
+                console.debug("create_subscription create_user callback", data)
+
+                /**
+                 * deprecated: to be removed in 2022
+                 */
+                if(servicebot_wp_handle_response_create_subscription){
+                    servicebot_wp_handle_response_create_subscription({event, response, extras});
+                }
+                /**
+                 * new handle response hook for 2021
+                 */
+                if(billflow_wp_handle_response_create_subscription){
+                    billflow_wp_handle_response_create_subscription({event, response, extras});
+                }
+
+                /**
+                 * redirect from wp v1 plugin's settings
+                 */
+                if(login_redirect_url){
+                    window.location = login_redirect_url;
+                }else if(data.refresh){
+                    window.location.reload();
+                    try{
+                        const url = window.billflowSettings.options.behavior.signup.redirects.checkoutSuccess
+                        if( url ){
+                            window.location.href = url
+                        }
+                    }catch(e){
+                        console.debug("redirect option is not set, do nothing.")
+                    }
+                }
+
+            }).done(function(){
+                resolve("created WP user successfully!")
+            }).fail(function(){
+                reject("unable to create WP user!")
+                console.error("Billflow WP account creation encountered an error");
+            })
+        })
+    }
+
+    async function handleResponse ({event, response, extras}) {
         if(event === "create_subscription" && create_user == 1){
             console.debug("create_subscription event callback", response, extras);
             const email    = response.customer.email;
@@ -114,36 +162,7 @@
                     subscription_id: response && response.id,
                     password: password
                 };
-
-                jQuery.post(ajax_url, payload, function(data) {
-                    console.debug("create_subscription create_user callback", data)
-
-                    /**
-                     * deprecated: to be removed in 2022
-                     */
-                    if(servicebot_wp_handle_response_create_subscription){
-                        servicebot_wp_handle_response_create_subscription({event, response, extras});
-                    }
-                    /**
-                     * new handle response hook for 2021
-                     */
-                    if(billflow_wp_handle_response_create_subscription){
-                        billflow_wp_handle_response_create_subscription({event, response, extras});
-                    }
-
-                    if(login_redirect_url){
-                        console.debug("redirect url set", login_redirect_url);
-                        window.location = login_redirect_url;
-                    }else if(data.refresh){
-                        window.location.reload();
-                    }
-
-                }).done(function(){
-                    // console.log("Billflow WP account creation successful")
-                }).fail(function(){
-                    // alert('checkout create usr failed');
-                    console.error("Billflow WP account creation encountered an error");
-                })
+                await createUserPromise(payload);
             }
 
         }
@@ -154,7 +173,6 @@
             servicebot_wp_handle_response({event, response, extras})
         }
         if(window.billflow_wp_handle_response){
-            console.debug("billflow_wp_handle_response")
             billflow_wp_handle_response({event, response, extras})
         }
     }
@@ -165,8 +183,9 @@
             'email': logged_in_email || email || '',
             'hash': hash,
             'handleResponse' : handleResponse,
+            'preFetchedConfig': server_side_config && JSON.parse(server_side_config),
             'metadata': {
-                'serverside_config': true,
+                'server_side_config': true,
                 'widget_type': embed_type,
                 'plugin_type': 'wordpress',
                 'plugin_version': js_version,
@@ -184,7 +203,7 @@
             if(window.location.host == 'servicebot-wordpress.docksal'){
                 (function () { 
                     var s = document.createElement("script"); 
-                    s.src = "/wp-content/themes/twentynineteen/js/build/servicebot-billing-settings-embed.js"; 
+                    s.src = "/wp-content/themes/twentynineteen/js/build/billflow-embed.js"; 
                     s.async = true; 
                     s.type = "text/javascript"; 
                     var x = document.getElementsByTagName("script")[0]; 
