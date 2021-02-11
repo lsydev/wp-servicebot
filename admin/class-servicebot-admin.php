@@ -400,10 +400,7 @@ class Servicebot_Admin {
 				$args
 			);
 
-			register_setting(
-				'billflow_roles_settings',
-				"billflow_role_to_tier_$role_name",
-			);
+			register_setting("billflow_roles_settings", "billflow_role_to_tier_$role_name");
 		}
 		
 	}
