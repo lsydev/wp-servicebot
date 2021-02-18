@@ -45,7 +45,7 @@ Features:
 == How To Use ==
  * Install this plugin
  * Create a billing page at [dashboard.billflow.io](https://dashboard.billflow.io)
- * Insert a shortcode and embed one any of the billflow embeds, pricing, checkout, customer portal etc.
+ * Insert a shortcode to embed one of the billflow embeds, pricing, checkout, customer portal etc.
  * Setup Stripe webhooks to sync your Stripe customer and subscription status to your WordPress user and user roles.
 
 == Shortcodes Examples ==
