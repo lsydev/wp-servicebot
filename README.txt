@@ -92,7 +92,7 @@ This is supported by every Stripe supported country. Go [here](https://stripe.co
 
 = Do I need to have a Billflow account? =
   
-Yes, the plugin is there to connect your wordpress with your Billflow account. You can signup [here](https://dashboard.billflow.io/signup). 
+Yes, the plugin is there to connect your wordpress with your Billflow account. You can signup [here](https://dashboard.billflow.io/signup?ref="wordpress-plugin-page"). 
 
 = Can I change the style of these pages? =
   
