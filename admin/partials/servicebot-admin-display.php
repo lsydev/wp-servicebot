@@ -78,7 +78,7 @@
 				<p style="font-size: 2em; max-width: 330px; padding-bottom: 0.8em; margin: 0.4em 0;">Build your Stripe billing flow with no code in minutes</p>
 			</div>
 			<div>
-				<a class="bfwp-button primary" href="#">Create a Billflow Account</a>
+				<a class="bfwp-button primary" href="https://dashboard.billflow.io/signup?ref=wp-plugin-signup-banner">Create a Billflow Account</a>
 			</div>
 			<div>
 				<a class="bfwp-link" href="#servicebot_servicebot_secret_key_global_setting">I already have an account</a>
