@@ -1,11 +1,7 @@
 <?php
-
-if(!class_exists('Stripe\Stripe')){
-	require_once 'stripe/init.php';
-}
-use Stripe\Stripe;
-use Stripe\Event;
-use Stripe\Webhook;
+// use Stripe\Stripe;
+// use Stripe\Event;
+// use Stripe\Webhook;
 
 /**
 	 * User meta data created by billflow
@@ -365,7 +361,9 @@ function getStripeCustomer($event, $customer_id){
 }
 
 function servicebot_webhook_listener() {
-
+	if(!class_exists('Stripe\Stripe')){
+		require_once 'stripe/init.php';
+	}
 	$rest_server = rest_get_server();
 	$rest_args = array(
 		'methods'  => 'POST',
@@ -385,7 +383,7 @@ function servicebot_webhook_listener() {
 			$stripe_secret_key = get_option('servicebot_servicebot_stripe_live_secret_key_setting');
 		}
 
-		Stripe::setApiKey($stripe_secret_key);
+		\Stripe\Stripe::setApiKey($stripe_secret_key);
 		$endpoint_secret = $stripe_sign_secret;
 		
 		$payload = @file_get_contents( 'php://input' );
@@ -393,7 +391,7 @@ function servicebot_webhook_listener() {
 		$event = null;
 		
 		try {
-			$event = Webhook::constructEvent(
+			$event = \Stripe\Webhook::constructEvent(
 				$payload, $sig_header, $endpoint_secret
 			);
 		} catch(\UnexpectedValueException $e) {
