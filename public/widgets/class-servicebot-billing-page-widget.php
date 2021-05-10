@@ -182,6 +182,9 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
         $server_side_config = null;
         if($billing_page_id){
             $api_url = "https://api.billflow.io/api/get-billing-page";
+            if(get_site_url() === 'http://servicebot-wordpress.docksal'){
+                $api_url = "http://localhost:3000";    
+            }
             // $api_url = "https://88112a4be9fb.ngrok.io/api/get-billing-page";
             try{
                 $server_side_config = Requests::request( $api_url, 
