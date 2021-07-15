@@ -179,27 +179,6 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
             return $role != "";
         });
 
-        $server_side_config = null;
-        if($billing_page_id){
-            $api_url = "https://api.billflow.io/api/get-billing-page";
-            if(get_site_url() === 'http://servicebot-wordpress.docksal'){
-                $api_url = "http://localhost:3000";    
-            }
-            // $api_url = "https://88112a4be9fb.ngrok.io/api/get-billing-page";
-            try{
-                $server_side_config = Requests::request( $api_url, 
-                    ["Content-Type"=> "application/json", "Origin"=> TRUE], 
-                    json_encode(["billing_page_id"=> $billing_page_id]), 
-                    "POST", []);
-                if($server_side_config->body){
-                    $server_side_config = $server_side_config->body;
-                }
-            }catch(Exception $e){
-                // ignore exceptions for now
-            }
-        }
-        // print_r($server_side_config);
-
         $js_settings = array(
             'can_edit_site'   => current_user_can('edit_pages') || current_user_can('edit_posts'),
             'user_roles'       => $user_roles,
@@ -219,8 +198,7 @@ class Servicebot_Billing_Page_Widget extends WP_Widget {
             'admin_ajax_url'  => $admin_ajax_url,
             'widget'          => 'billflow-billing-page-widget',
             'embed_type'      => 'billing_page',
-            'js_version'      => $js_version,
-            'server_side_config' => $server_side_config
+            'js_version'      => $js_version
         );
 
         // print_r($js_settings);
