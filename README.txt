@@ -2,7 +2,7 @@
 Contributors: servicebot
 Tags: stripe,subscriptions,payments,pricing page,subscription management
 Requires at least: 5.0
-Tested up to: 5.5.1
+Tested up to: 5.8.0
 Requires PHP: 7.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -96,11 +96,11 @@ Yes, the plugin is there to connect your wordpress with your Billflow account. Y
 
 = Can I change the style of these pages? =
   
-Yes you can, check out our docs here to learn more about styling these pages [here](https://docs.billflow.io/subscription-portal/pricing-page/customize-style-and-features-of-pricing-page). 
+Yes you can, check out our docs here to learn more about styling these pages [here](https://docs.billflow.io/how-to/change-style). 
 
 = Where is the documentation for the plugin? =
   
-Join us [here](https://docs.billflow.io/subscription-portal/integrations/wordpress), and feel free to message us on our website with any questions.
+Join us [here](https://docs.billflow.io/no-code-integrations/no-code-app-builders/wordpress), and feel free to message us on our website with any questions.
 
 == Screenshots ==
 1. Pricing Pages

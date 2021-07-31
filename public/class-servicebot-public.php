@@ -118,6 +118,37 @@ class Servicebot_Public {
 
 }
 
+function billflow_log_in_user($user_id, $email, $user_login, $password){
+	
+	$wp_auth = wp_authenticate($user_login, $password);
+
+	if(is_wp_error($wp_auth)){
+		// this is probably someone else used the same email OR put in the wrong password.
+		wp_send_json_error( array(  
+			'email' => $email,
+			'user_already_exists' => true,
+			'password_match' => false
+		), 401 );
+	}else{
+		// Login the new user
+		wp_clear_auth_cookie();
+		wp_set_current_user ( $user_id ); // Set the current user detail
+		wp_set_auth_cookie  ( $user_id ); // Set auth details in cookie
+		
+		// remove the meta that indicates need password update because they got the right password already
+		delete_user_meta($user_id, "billflow_stripe_webhook_created");
+
+		wp_send_json( array(  
+			'email' => $email,
+			'user_id' => $user_id,
+			'user_login' => $user_login,
+			'password' => '****************************',
+			'login_user_by_password' => true,
+			'refresh'=> true
+		), 200 );
+	}
+}
+
 
 function servicebot_ajax_create_user() {
 
@@ -157,40 +188,39 @@ function servicebot_ajax_create_user() {
 								'refresh' => true
 					), 200 );
 	}else{
-
-		// if user already exists
+		// try to fetch the user by email
 		$existing_user = get_user_by('email', $email);
-		$user_id = $existing_user->get('id');
-		// if the user hasn't been updated with a password
-		if(get_user_meta( $user_id, "billflow_stripe_webhook_created", TRUE )){
-			// and if the user has the matching subscription
-			if(get_user_meta( $user_id, "billflow_stripe_subscription_id", TRUE) === $subscription_id){
-				// remove the meta that indicates need password update
-				delete_user_meta($user->get('id'), "billflow_stripe_webhook_created");
-				// update the password
-				wp_set_password($password, $user_id);
-				// Login the new user
-				wp_clear_auth_cookie();
-				wp_set_current_user ( $user_id ); // Set the current user detail
-				wp_set_auth_cookie  ( $user_id ); // Set auth details in cookie
-
-				wp_send_json( array(  'email' => $email,
-						'user_already_exists' => true,
-						'password_updated' => true,
-				), 200 );
+		// if user already exists
+		if($existing_user){
+			$user_id = $existing_user->get('id');
+			$user_login = $existing_user->get('user_login');
+		
+			// if the user hasn't been updated with a password
+			// this is when the user is just newly created by stripe webhook
+			if(get_user_meta( $user_id, "billflow_stripe_webhook_created", TRUE )){
+				// and if the user has the matching subscription
+				if(get_user_meta( $user_id, "billflow_stripe_subscription_id", TRUE) === $subscription_id){
+					// set the password automatically here because the subscription id matches.
+					wp_set_password($password, $user_id);
+					// Login the new user with the provided password
+					billflow_log_in_user($user_id, $email, $user_login, $password);
+				}else{
+					// if the subscription id doesn't match
+					// still try login the user with the user input password to see if they are the owner
+					// because user exists, but provided a password.
+					billflow_log_in_user($user_id, $email, $user_login, $password);
+				}
 			}else{
-				// the case if some one else put an existing email in.
-				wp_send_json_error( array(  'email' => $email,
-						'user_already_exists' => true,
-						'checkout_sid' => $subscription_id,
-						// 'existing_sid' => get_user_meta( $user_id, "billflow_stripe_subscription_id", TRUE),
-						'error' => 'User is created by webhook, but subscription does not match.',
-				), 591 );
+				// if user exists but not newly created by webhook
+				// because user exists, but provided a password.
+				billflow_log_in_user($user_id, $email, $user_login, $password);
 			}
 		}else{
+			// WP_Error but not existing user, some other unhandled errors.
+			// for some reason other than an existing user with the same email.
 			wp_send_json_error( array(  'email' => $email,
-				'error' => 'Unable to create user.',
-			), 592 );
+				'error' => $user_id->get_error_message(),
+			), 500 );
 		}
 	}
 
