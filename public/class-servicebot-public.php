@@ -193,6 +193,8 @@ function servicebot_ajax_create_user() {
 					), 200 );
 	}else{
 		// if user already exists
+		$existing_user = get_user_by('email', $email);
+		
 		if($existing_user){
 			$user_id = $existing_user->get('id');
 			$user_login = $existing_user->get('user_login');
