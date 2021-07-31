@@ -118,18 +118,49 @@ class Servicebot_Public {
 
 }
 
-function billflow_log_in_user($user_id, $email, $user_login, $password, $caller){
+function billflow_log_in_user($user_id, $email, $user_login, $password, $subscription_id, $caller){
 	
-	$wp_auth = wp_authenticate($user_login, $password);
+	$is_webhook_new_user = get_user_meta( $user_id, "billflow_stripe_webhook_created", TRUE );
+	$user_subscription_id_matched = get_user_meta( $user_id, "billflow_stripe_subscription_id", TRUE) === $subscription_id;
+	$real_password = $is_webhook_new_user ? $subscription_id : $password;
+	$wp_auth = wp_authenticate($user_login, $real_password);
 
 	if(is_wp_error($wp_auth)){
-		// this is probably someone else used the same email OR put in the wrong password.
-		wp_send_json_error( array(  
-			'email' => $email,
-			'user_already_exists' => true,
-			'password_match' => false,
-			'caller' => $caller
-		), 401 );
+
+		if($is_webhook_new_user && $user_subscription_id_matched){
+			// safe to set the password for this user since they have matching OR 
+			// they are the newly created by webhook and have matching subscription id 
+			// subscription id and is a new webhook created user.
+			wp_set_password( $password, $user_id );
+			wp_clear_auth_cookie(); // Login the new user
+			wp_set_current_user ( $user_id ); // Set the current user detail
+			wp_set_auth_cookie  ( $user_id ); // Set auth details in cookie
+			// remove the meta that indicates need password update
+			delete_user_meta($user_id, "billflow_stripe_webhook_created");
+			
+			wp_send_json( array(  
+				'email' => $email,
+				'user_id' => $user_id,
+				'user_login' => $user_login,
+				'password' => '****************************',
+				'login_by_webhook_subscription' => true,
+				'is_webhook_new_user' => $is_webhook_new_user,
+				'user_subscription_id_matched' => $user_subscription_id_matched,
+				'refresh'=> true,
+				'caller' => $caller
+			), 200 );
+
+		}else{
+			// this is probably someone else used the same email OR put in the wrong password.
+			wp_send_json_error( array(  
+				'email' => $email,
+				'user_already_exists' => true,
+				'password_match' => false,
+				'is_webhook_new_user' => $is_webhook_new_user,
+				'user_subscription_id_matched' => $user_subscription_id_matched,
+				'caller' => $caller
+			), 401 );
+		}
 	}else{
 		// Login the new user
 		wp_clear_auth_cookie();
@@ -172,7 +203,7 @@ function servicebot_ajax_create_user() {
 	//On success
 	if ( ! is_wp_error( $user_id ) ) {
 
-		// add user meta to note that this is created by Stripe webhook
+		// add user meta to note that this is created by ajax
 		update_user_meta($user_id, "billflow_checkout_created", TRUE);
 		update_user_meta($user_id, "billflow_created", TRUE);
 
@@ -201,7 +232,7 @@ function servicebot_ajax_create_user() {
 		
 			// if user exists but not newly created by webhook
 			// because user exists and provided a password.
-			billflow_log_in_user($user_id, $email, $user_login, $password, 'billflow_login_by_password');
+			billflow_log_in_user($user_id, $email, $user_login, $password, $subscription_id,'billflow_login_by_password');
 
 		}else{
 			// WP_Error but not existing user, some other unhandled errors.
@@ -271,8 +302,10 @@ function servicebot_create_wp_user($customer, $product_sb_tier = NULL, $subscrip
 	// create wp user with the email and role should be assigned to whatever system settings's default is
 	$userdata = array(
 		'user_login'  => $email,
-		'user_email' => $email
+		'user_email' => $email,
+		'password' => $subscription_id
 	);
+
 	$user_id = wp_insert_user( $userdata );
 
 	if ( ! is_wp_error( $user_id ) ) {

@@ -97,6 +97,21 @@
         return false
     }
 
+    function delayed(time, callback, payload){
+        return new Promise((resolve, reject) => {
+            console.debug(`Waiting ${time} milliseconds then make the call`)
+            setTimeout(async function(){ 
+                console.debug("Calling create user ajax after delay")
+                try{
+                    resolve(await callback(payload))
+                    console.debug("Create user ajax call finished")
+                }catch(e){
+                    reject(e)
+                }
+            }, time);
+        })
+    }
+
     function createUserPromise(payload){
         return new Promise((resolve, reject) => {
             // We call resolve(...) when what we were doing asynchronously was successful, and reject(...) when it failed.
@@ -153,8 +168,11 @@
             const password = extras ? extras.password : null;
             const ajax_url = admin_ajax_url;
 
-            if(event === "create_subscription" && !logged_in_email){
+            if(!logged_in_email){
+                // if not already logged in, then try to create the user with 
+                // the email provided by the user
                 console.debug("Creating user", response, extras);
+
                 const payload = {
                     action: "create_user", 
                     email: response.customer.email, 
@@ -162,7 +180,10 @@
                     subscription_id: response && response.id,
                     password: password
                 };
-                await createUserPromise(payload);
+
+                // await delayed(10000, createUserPromise, payload);
+                await createUserPromise(payload)
+                // console.debug("Delayed call finished")
             }
 
         }

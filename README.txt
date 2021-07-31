@@ -11,8 +11,16 @@ Stable tag: trunk
 Integrate Stripe Billing with your Wordpress site in minutes. Allow customers to view pricing, sign up, and manage subscriptions.
 
 == Upgrade Notice ==
-IMPORTANT!! This 2.0.0 version upgrade could introduce some breaking change!
-If you are using this plugin's 1.x.x version already, please test this plugin thoroughly!
+IMPORTANT!! Starting in 2.0.0 version upgrade could introduce some breaking change if
+you are currently using this plugin's 1.x.x version, please test this plugin thoroughly 
+in a test environment before upgrading production to > 2.0.0!
+
+Steps to take to upgrade from v1 to v2 of this plugin:
+ 1. Go to the plugin's settings page and delete all setting fields and save.
+ 2. Go to the plugins page and update to the latest version.
+ 3. Make sure to use the new updated shortcodes listed below.
+ 4. make sure your billing page in dashboard.billflow.io are using the latest version. 
+
 Some standard tests you should do:
  * Check all you embed pages and test all flows
  * Check your webhook integrations and make sure they still work as you had before
@@ -30,7 +38,7 @@ Some standard tests you should do:
 
 = Billflow =
 Launch a subscription business faster than ever with the Stripe Billing plugin by Billflow. 
-This plugin automatically connects your Stripe account to your Wordpress site allowing you to show beautiful pricing pages, take payments for Stripe Subscriptions, and let customers manage their accounts. The plugin uses Wordpress's default user authentication to allow your customers to log-in and manage their subscriptions. 
+This plugin automatically connects your Stripe account to your Wordpress site allowing you to show beautiful pricing pages, take payments for Stripe Subscriptions, and let customers manage their accounts. The plugin uses WordPress's default user authentication to allow your customers to log-in and manage their subscriptions. 
 Features:
  * Beautiful Pricing pages that can handle any Stripe pricing model
  * Secure sign up forms allowing customers to subscribe to plans
@@ -92,7 +100,7 @@ This is supported by every Stripe supported country. Go [here](https://stripe.co
 
 = Do I need to have a Billflow account? =
   
-Yes, the plugin is there to connect your wordpress with your Billflow account. You can signup [here](https://dashboard.billflow.io/signup?ref="wordpress-plugin-page"). 
+Yes, the plugin is there to connect your wordpress with your Billflow account. You can sign up [here](https://dashboard.billflow.io/signup?ref="wordpress-plugin-page"). 
 
 = Can I change the style of these pages? =
   
@@ -104,5 +112,5 @@ Join us [here](https://docs.billflow.io/no-code-integrations/no-code-app-builder
 
 == Screenshots ==
 1. Pricing Pages
-2. Signup Forms
+2. Sign up Forms
 3. Subscription Management Portal
