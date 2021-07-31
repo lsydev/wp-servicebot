@@ -118,7 +118,7 @@ class Servicebot_Public {
 
 }
 
-function billflow_log_in_user($user_id, $email, $user_login, $password){
+function billflow_log_in_user($user_id, $email, $user_login, $password, $caller){
 	
 	$wp_auth = wp_authenticate($user_login, $password);
 
@@ -127,7 +127,8 @@ function billflow_log_in_user($user_id, $email, $user_login, $password){
 		wp_send_json_error( array(  
 			'email' => $email,
 			'user_already_exists' => true,
-			'password_match' => false
+			'password_match' => false,
+			'caller' => $caller
 		), 401 );
 	}else{
 		// Login the new user
@@ -144,12 +145,15 @@ function billflow_log_in_user($user_id, $email, $user_login, $password){
 			'user_login' => $user_login,
 			'password' => '****************************',
 			'login_user_by_password' => true,
-			'refresh'=> true
+			'refresh'=> true,
+			'caller' => $caller
 		), 200 );
 	}
 }
 
-
+/**
+ * create user function called by frontend widget ajax
+ */
 function servicebot_ajax_create_user() {
 
     $email = sanitize_email( $_POST['email'] );
@@ -184,37 +188,19 @@ function servicebot_ajax_create_user() {
 								'email' => $email,
 								'name' => $name,
 								'password' => '*****',
-								'message' => 'User created successfully.',
+								'message' => 'User created successfully by ajax call',
 								'refresh' => true
 					), 200 );
 	}else{
-		// try to fetch the user by email
-		$existing_user = get_user_by('email', $email);
 		// if user already exists
 		if($existing_user){
 			$user_id = $existing_user->get('id');
 			$user_login = $existing_user->get('user_login');
 		
-			// if the user hasn't been updated with a password
-			// this is when the user is just newly created by stripe webhook
-			if(get_user_meta( $user_id, "billflow_stripe_webhook_created", TRUE )){
-				// and if the user has the matching subscription
-				if(get_user_meta( $user_id, "billflow_stripe_subscription_id", TRUE) === $subscription_id){
-					// set the password automatically here because the subscription id matches.
-					wp_set_password($password, $user_id);
-					// Login the new user with the provided password
-					billflow_log_in_user($user_id, $email, $user_login, $password);
-				}else{
-					// if the subscription id doesn't match
-					// still try login the user with the user input password to see if they are the owner
-					// because user exists, but provided a password.
-					billflow_log_in_user($user_id, $email, $user_login, $password);
-				}
-			}else{
-				// if user exists but not newly created by webhook
-				// because user exists, but provided a password.
-				billflow_log_in_user($user_id, $email, $user_login, $password);
-			}
+			// if user exists but not newly created by webhook
+			// because user exists and provided a password.
+			billflow_log_in_user($user_id, $email, $user_login, $password, 'billflow_login_by_password');
+
 		}else{
 			// WP_Error but not existing user, some other unhandled errors.
 			// for some reason other than an existing user with the same email.

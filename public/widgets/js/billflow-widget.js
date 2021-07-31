@@ -67,7 +67,7 @@
         if(upgrade_url){
             window.location.replace(upgrade_url + "?redirect_to=" + window.location.pathname + window.location.search)
         }else{
-            // alert("Please add upgrade_url to the billflow shortcode with the upgrade checkout page to send this user to upgrade, otherwise, it goes to home page by default")
+            console.error("[BF_ERROR] Please add upgrade_url to the billflow shortcode with the upgrade checkout page to send this user to upgrade, otherwise, it goes to home page by default")
         }
     }
 
@@ -138,9 +138,9 @@
 
             }).done(function(){
                 resolve("created WP user successfully!")
-            }).fail(function(){
+            }).fail(function(jqXHR, textStatus, errorThrown){
+                console.error("Billflow WP account creation encountered an error", jqXHR.responseText, textStatus, errorThrown);
                 reject("unable to create WP user!")
-                console.error("Billflow WP account creation encountered an error");
             })
         })
     }
