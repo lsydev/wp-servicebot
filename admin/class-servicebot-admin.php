@@ -163,7 +163,7 @@ class Servicebot_Admin {
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
-			'subtype'	=> 'text',
+			'subtype'	=> 'password',
 			'id'		=> 'servicebot_servicebot_secret_key_global_setting',
 			'name'		=> 'servicebot_servicebot_secret_key_global_setting',
 			'required' 	=> 'true',
@@ -228,7 +228,7 @@ class Servicebot_Admin {
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
-			'subtype'	=> 'text',
+			'subtype'	=> 'password',
 			'id'		=> 'servicebot_servicebot_stripe_test_secret_key_setting',
 			'name'		=> 'servicebot_servicebot_stripe_test_secret_key_setting',
 			'required' 	=> 'false',
@@ -252,7 +252,7 @@ class Servicebot_Admin {
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
-			'subtype'	=> 'text',
+			'subtype'	=> 'password',
 			'id'		=> 'servicebot_servicebot_stripe_live_secret_key_setting',
 			'name'		=> 'servicebot_servicebot_stripe_live_secret_key_setting',
 			'required' 	=> 'false',
@@ -276,7 +276,7 @@ class Servicebot_Admin {
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
-			'subtype'	=> 'text',
+			'subtype'	=> 'password',
 			'id'		=> 'servicebot_servicebot_stripe_test_signing_secret_setting',
 			'name'		=> 'servicebot_servicebot_stripe_test_signing_secret_setting',
 			'required' 	=> 'false',
@@ -300,7 +300,7 @@ class Servicebot_Admin {
 		unset($args);
 		$args = array (
 			'type'		=> 'input',
-			'subtype'	=> 'text',
+			'subtype'	=> 'password',
 			'id'		=> 'servicebot_servicebot_stripe_live_signing_secret_setting',
 			'name'		=> 'servicebot_servicebot_stripe_live_signing_secret_setting',
 			'required' 	=> 'false',
